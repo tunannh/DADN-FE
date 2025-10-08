@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const SafeScreen = ({ children } : any) => {
+const SafeScreen = ({ children }: any) => {
   const insets = useSafeAreaInsets();
 
   return (
@@ -13,7 +13,7 @@ const SafeScreen = ({ children } : any) => {
         flex: 2,
         backgroundColor: COLORS.background,
       }}
-    > 
+    >
       <StatusBar style="dark" backgroundColor={COLORS.background} />
       {children}
     </View>

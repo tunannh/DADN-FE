@@ -1,0 +1,1 @@
+declare module "@/assets/bg-image/smartfarm-bg.png";

@@ -1,11 +1,14 @@
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text, View } from 'react-native'
 
 const SignUp = () => {
   return (
-    <View>
-      <Text>SignUp</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View>
+        <Text>SignUp</Text>
+      </View>
+    </SafeAreaView>
   )
 }
 

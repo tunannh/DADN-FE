@@ -1,11 +1,14 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SetThreshold = () => {
   return (
-    <View>
-      <Text>SetThreshold</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View>
+        <Text>Set threshold</Text>
+      </View>
+    </SafeAreaView>
   )
 }
 
