@@ -20,6 +20,11 @@ const forestTheme = {
   textNew: '#a6a3a3ff',
   card: "#FFFFFF",
   shadow: "#000000",
+
+  buttonBackground: '#1F4E20',
+  titleColor: '#003300',
+  textColor: '#707B81',
+  bgColor: '#F4FAF4'
 };
 
 const purpleTheme = {
