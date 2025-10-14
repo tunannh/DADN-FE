@@ -1,17 +1,5 @@
-// import SafeScreen from "@/components/SafeScreen";
-// import { Slot } from "expo-router";
-
-// export default function RootLayout() {
-//   return (
-//     <SafeScreen>
-//       <Slot />
-//     </SafeScreen>
-//   )
-// }
-
 import { Stack } from "expo-router";
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from "react-native-safe-area-context";
+
 const RootLayout = () => {
   return (
     <Stack
