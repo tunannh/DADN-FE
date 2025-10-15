@@ -24,6 +24,13 @@ export const authStyles = StyleSheet.create({
     alignItems
     : 'center',
   },
+  imageContainerSignUp: {
+    height: height * 0.1,
+    marginBottom: 30,
+    justifyContent: 'center',
+    alignItems
+    : 'center',
+  },
   image: {
     width: 320,
     height: 320,
@@ -41,7 +48,7 @@ export const authStyles = StyleSheet.create({
     textAlign: 'center', 
     marginBottom: 30,
   },
-  fromContainer: {
+  formContainer: {
     flex: 1
   },
   inputContainer: {
@@ -53,9 +60,10 @@ export const authStyles = StyleSheet.create({
     color: COLORS.text,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    borderWidth: 1,
+    borderWidth: 2,
     backgroundColor: COLORS.background,
-    borderColor: COLORS.border
+    borderColor: COLORS.border,
+    borderRadius: 2
   },
   eyeButton: {
     position: 'absolute',

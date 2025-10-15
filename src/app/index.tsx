@@ -17,11 +17,7 @@ const styles = StyleSheet.create({
   }
 })
 const WelcomePage = () => {
-  // if (true) {
-  //     return (
-  //         <Redirect href={'/(auth)} />
-  //     )
-  // }
+  
   return (
     <ImageBackground
       style={{ flex: 1 }}
