@@ -24,7 +24,12 @@ const forestTheme = {
   buttonBackground: '#1F4E20',
   titleColor: '#003300',
   textColor: '#707B81',
-  bgColor: '#F4FAF4'
+  bgColor: '#F4FAF4',
+  borderColor: '#D0D0D0',
+
+  fan_color: '#e87c09ff',
+  pump_color: '#2E95D6',
+  light_color: '#rgba(218, 212, 31, 1)'
 };
 
 const purpleTheme = {

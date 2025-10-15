@@ -9,17 +9,19 @@
 //   )
 // }
 
+import { COLORS } from "@/constants/colors";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from "react-native-safe-area-context";
+
 const RootLayout = () => {
   return (
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#f4511e',
+          backgroundColor: COLORS.bgColor,
         },
-        headerTintColor: '#fff',
+        headerTintColor: COLORS.titleColor,
         headerTitleStyle: {
           fontWeight: 'bold',
         },
@@ -42,6 +44,24 @@ const RootLayout = () => {
         options={{
           headerTitle: "Trang chủ",
           headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="Device-infor"
+        options={{
+          headerTitle: "Device Information",
+        }}
+      />
+      <Stack.Screen
+        name="Add-device"
+        options={{
+          headerTitle: "Add Device",
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        options={{
+          headerTitle: "Setting",
         }}
       />
     </Stack>

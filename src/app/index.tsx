@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { Button, StyleSheet, Text, View, ImageBackground } from "react-native";
 import smartfarm_bg from "@/assets/bg-image/smartfarm-bg.png"
 
@@ -17,11 +17,6 @@ const styles = StyleSheet.create({
   }
 })
 const WelcomePage = () => {
-  // if (true) {
-  //     return (
-  //         <Redirect href={'/(auth)} />
-  //     )
-  // }
   return (
     <ImageBackground
       style={{ flex: 1 }}
