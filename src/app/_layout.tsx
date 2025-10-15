@@ -1,18 +1,5 @@
-// import SafeScreen from "@/components/SafeScreen";
-// import { Slot } from "expo-router";
-
-// export default function RootLayout() {
-//   return (
-//     <SafeScreen>
-//       <Slot />
-//     </SafeScreen>
-//   )
-// }
-
 import { COLORS } from "@/constants/colors";
 import { Stack } from "expo-router";
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const RootLayout = () => {
   return (
