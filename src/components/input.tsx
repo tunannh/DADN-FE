@@ -31,27 +31,29 @@ const styles = StyleSheet.create({
 
 interface IProps {
     label?: string;
+    placeholder?: string;
     keyboardType?: KeyboardTypeOptions;
     isPassword?: boolean;
     value: any;
-    setValue?: (v: any) => void;
+    setValue: (v: any) => void;
 }
 const Input = (props: IProps) => {
     const [isFocus, setIsForcus] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const { label, keyboardType, isPassword = false,
+    const { placeholder, label, keyboardType, isPassword = false,
         value, setValue
     } = props;
     return (
         <View style={styles.input_group}>
             {label && <Text style={styles.label}>{label}</Text>}
             <View>
-                <TextInput style={[styles.input, { borderColor: isFocus ? 'orange' : COLORS.borderColor }]} keyboardType={keyboardType}
+                <TextInput style={[styles.input, { borderColor: isFocus ? COLORS.primary : COLORS.borderColor }]} keyboardType={keyboardType}
                     onFocus={() => setIsForcus(true)}
                     onBlur={() => setIsForcus(false)}
                     secureTextEntry={(isPassword && showPassword) ? true : false}
+                    placeholder={placeholder}
                     value={value}
-                // onChangeText={(text) => setValue(text)}
+                    onChangeText={(text) => setValue(text)}
                 />
                 {isPassword && isFocus && <Feather
                     style={styles.eye}

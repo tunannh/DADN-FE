@@ -1,7 +1,7 @@
-import { COLORS } from '@/constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {
   Alert,
   FlatList,
@@ -11,7 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import SafeScreen from '@/components/SafeScreen';
+import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS } from '@/constants/colors';
 
 const ManageUser = () => {
   const navigation = useNavigation();
@@ -44,25 +46,7 @@ const ManageUser = () => {
   );
 
   return (
-    <SafeScreen style={manageUserStyles.container}>
-      {/* Header */}
-      <View style={manageUserStyles.header}>
-        <TouchableOpacity
-          style={manageUserStyles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={22} color="#000" />
-        </TouchableOpacity>
-
-        <Text style={manageUserStyles.title}>Manage User</Text>
-
-        <TouchableOpacity
-          onPress={() => Alert.alert('Add User', 'Chức năng thêm user')}
-        >
-          <Ionicons name="add" size={28} color="#000" />
-        </TouchableOpacity>
-      </View>
-
+    <SafeAreaView style={manageUserStyles.container}>
       {/* Search */}
       <View style={manageUserStyles.searchContainer}>
         <Ionicons
@@ -78,6 +62,14 @@ const ManageUser = () => {
           onChangeText={setSearch}
         />
       </View>
+
+      <TouchableOpacity
+        style={manageUserStyles.add}
+        onPress={() => alert("add user")}
+      >
+        <MaterialIcons name="add" size={24} color="white" />
+        <Text style={{ color: 'white', fontSize: 16 }}>Add user</Text>
+      </TouchableOpacity>
 
       {/* User List */}
       <FlatList
@@ -102,7 +94,7 @@ const ManageUser = () => {
                 <Ionicons name="trash-outline" size={22} color="#B00020" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profile' as never)}
+                onPress={() => router.navigate('/(tabs)/Profile')}
               >
                 <Ionicons name="chevron-forward" size={22} color="#215C2A" />
               </TouchableOpacity>
@@ -110,7 +102,7 @@ const ManageUser = () => {
           </View>
         )}
       />
-    </SafeScreen>
+    </SafeAreaView>
   );
 };
 
@@ -119,38 +111,17 @@ export default ManageUser;
 const manageUserStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#215C2A',
+    backgroundColor: COLORS.bgColor,
+    marginTop: 0,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 25,
-    marginTop: 20,
+    borderRadius: 30,
     marginHorizontal: 20,
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 8,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
@@ -165,13 +136,27 @@ const manageUserStyles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
   },
+  add: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.buttonBackground,
+    borderRadius: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    gap: 6,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginTop: 30,
+  },
   card: {
     flexDirection: 'row',
+    marginBottom: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
     borderRadius: 16,
-    marginTop: 20,
     marginHorizontal: 20,
     padding: 16,
     shadowColor: '#000',

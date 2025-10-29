@@ -2,8 +2,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { COLORS } from "@/constants/colors";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { router } from "expo-router";
+import { useDeviceStore } from "@/store/device-store";
 
 const styles = StyleSheet.create({
     container: {
@@ -52,27 +53,28 @@ const styles = StyleSheet.create({
 })
 
 interface IProps {
-    device_name: string;
-    active: boolean,
-    icon: ReactNode,
-    onPress: () => void
+    deviceName: string;
+    active: boolean;
+    deviceId?: string;
+    icon?: ReactNode,
+    toggle?: (value: boolean) => void;
 }
 
 const DeviceBox = (props: IProps) => {
-    const { device_name, active, icon, onPress } = props;
-
+    const { deviceName, active, icon, deviceId, toggle } = props;
+    const { deleteDevice, changeStatus } = useDeviceStore();
     const status: string = active ? "On" : "Off"
     return (
         <View style={styles.container}>
             <View style={styles.infor}>
                 <View style={styles.device_icon}>
-                    {icon}
+                    {icon ? icon : <MaterialIcons name="device-unknown" size={50} color={COLORS.buttonBackground} />}
                 </View>
                 <View style={styles.device_name}>
-                    <Text style={styles.label}>{device_name}</Text>
+                    <Text style={styles.label}>{deviceName}</Text>
                     <TouchableOpacity
                         style={[styles.status, { backgroundColor: active ? '#13E633' : '#CC1800' }]}
-                        onPress={onPress}
+                        onPress={() => { toggle ? toggle(!active) : changeStatus(deviceId!) }}
                     >
                         <Text style={{ color: 'white', fontSize: 16 }}>{status}</Text>
                     </TouchableOpacity>
@@ -81,9 +83,13 @@ const DeviceBox = (props: IProps) => {
 
             <View style={styles.actions}>
                 <View>
-                    <MaterialIcons name="delete-outline" size={22} color={COLORS.titleColor} />
+                    <TouchableOpacity
+                        onPress={() => { deviceId ? deleteDevice(deviceId) : alert("Can not delete this device") }}
+                    >
+                        <MaterialIcons name="delete-outline" size={22} color={COLORS.titleColor} />
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => { router.navigate("/Device-infor") }}>
+                <TouchableOpacity onPress={() => { router.navigate("/device_actions/Device-infor") }}>
                     <Entypo name="chevron-thin-right" size={24} color={COLORS.titleColor} />
                 </TouchableOpacity>
             </View>

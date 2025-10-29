@@ -22,14 +22,14 @@ export const authStyles = StyleSheet.create({
     marginBottom: 30,
     justifyContent: 'center',
     alignItems
-    : 'center',
+      : 'center',
   },
   imageContainerSignUp: {
     height: height * 0.1,
     marginBottom: 30,
     justifyContent: 'center',
     alignItems
-    : 'center',
+      : 'center',
   },
   image: {
     width: 320,
@@ -40,12 +40,13 @@ export const authStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.text,
     textAlign: 'center',
-    marginBottom: 40,
+    marginVertical: 40,
+    marginBottom: 20
   },
   subtitle: {
     fontSize: 16,
     color: COLORS.textLight,
-    textAlign: 'center', 
+    textAlign: 'center',
     marginBottom: 30,
   },
   formContainer: {

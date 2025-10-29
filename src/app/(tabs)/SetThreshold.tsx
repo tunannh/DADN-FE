@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { ThresholdCard, AutoModeCard } from '@/components/ThresholdCard';
+import { COLORS } from '@/constants/colors';
 
 
 export default function SetThresholdScreen() {
@@ -61,13 +62,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5FAF7',
     paddingHorizontal: 16,
-    paddingTop: 60,
+    paddingTop: 50,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#0D532E',
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: COLORS.titleColor,
     textAlign: 'center',
-    marginBottom: 26,
+    marginBottom: 30,
   },
 });

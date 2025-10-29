@@ -53,7 +53,7 @@ const Profile = () => {
 
     // Mở thư viện
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
@@ -155,7 +155,6 @@ export default Profile;
 const profileStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   keyboardView: {
     flex: 1,
@@ -182,9 +181,9 @@ const profileStyles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: 'center',
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#215C2A',
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: COLORS.titleColor,
   },
   avatarContainer: {
     alignItems: 'center',

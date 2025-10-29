@@ -34,21 +34,27 @@ const RootLayout = () => {
         }}
       />
       <Stack.Screen
-        name="Device-infor"
+        name="device_actions/Device-infor"
         options={{
           headerTitle: "Device Information",
         }}
       />
       <Stack.Screen
-        name="Add-device"
+        name="device_actions/Add-device"
         options={{
           headerTitle: "Add Device",
         }}
       />
       <Stack.Screen
-        name="Settings"
+        name="setting/setting"
         options={{
           headerTitle: "Setting",
+        }}
+      />
+      <Stack.Screen
+        name="manage_user/ManageUser"
+        options={{
+          headerTitle: "Manage User",
         }}
       />
     </Stack>

@@ -1,6 +1,7 @@
 import { homeStyles } from '@/assets/styles/home.style';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ImageBackground } from 'expo-image';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Image,
@@ -28,9 +29,13 @@ const Home = () => {
             <Ionicons name="settings-outline" size={24} color="black" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={homeStyles.iconCircle}>
-            <Feather name="bell" size={24} color="black" />
-            <View style={homeStyles.redDot} />
+          <TouchableOpacity
+            style={homeStyles.iconCircle}
+            onPress={() => router.navigate('/manage_user/ManageUser')}
+          >
+            {/* <Feather name="bell" size={24} color="black" /> */}
+            <Feather name="users" size={24} color="black" />
+            {/* <View style={homeStyles.redDot} /> */}
           </TouchableOpacity>
         </View>
 
@@ -92,7 +97,7 @@ const Home = () => {
             >
               <Switch
                 style={{
-                  borderWidth: 2, 
+                  borderWidth: 2,
                   borderColor: '#E14B32',
                   borderRadius: 50,
                 }}
