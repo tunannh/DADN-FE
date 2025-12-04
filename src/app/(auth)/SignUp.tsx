@@ -15,17 +15,18 @@ import {
 } from 'react-native';
 import { registerAPI } from '@/utils/api';
 import Toast from "react-native-root-toast";
+import { Formik } from 'formik';
+import { SignUpSchema } from '@/utils/validate.schema';
 
 const SignUp = () => {
   const router = useRouter();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [pendingVerification, setPendingVerification] = useState(false);
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (name: string, email: string, password: string) => {
     if (!email || !password || !name) {
       let toast = Toast.show('Please fill all the fields', {
         duration: 2000,
@@ -51,7 +52,8 @@ const SignUp = () => {
     // setLoading(true);
 
     try {
-      const response = await registerAPI(email, name, password);
+      setLoading(true);
+      const response = await registerAPI(name, email, password);
       if (response.data) { // response.status === 200
         let toast = Toast.show('Account created successfully', {
           duration: 2000,
@@ -73,6 +75,8 @@ const SignUp = () => {
       }
     } catch (error) {
       console.error('Registration Error:', error);
+    } finally {
+      setLoading(false);
     }
     // setTimeout(() => {
     //   try {
@@ -109,76 +113,106 @@ const SignUp = () => {
             />
           </View>
 
-          <Text style={[authStyles.title, { marginTop: 90 }]}>Create Account</Text>
+          <Text style={authStyles.title}>Create Account</Text>
 
-          <View style={authStyles.formContainer}>
-            {/* Name Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Enter name"
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="none"
-              />
-            </View>
+          <Formik
+            validationSchema={SignUpSchema}
+            initialValues={{ name: '', email: '', password: '' }}
+            onSubmit={values => handleSignUp(values.name, values.email, values.password)}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+              <View style={authStyles.formContainer}>
 
-            {/* Email Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Enter email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+                {/* Name Input */}
+                <View style={authStyles.inputContainer}>
+                  <Text style={authStyles.labelInput}>Name</Text>
+                  <TextInput
+                    style={authStyles.textInput}
+                    placeholder="Enter name"
+                    onChangeText={handleChange('name')}
+                    value={values.name}
+                    autoCapitalize="none"
+                  />
+                  {errors.name && (
+                    <Text style={authStyles.errorText}>
+                      *{errors.name}
+                    </Text>
+                  )}
+                </View>
 
-            {/* Password Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Enter password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                style={authStyles.eyeButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <Ionicons
-                  name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                  size={20}
-                />
-              </TouchableOpacity>
-            </View>
+                {/* Email Input */}
+                <View style={authStyles.inputContainer}>
+                  <Text style={authStyles.labelInput}>Email</Text>
+                  <TextInput
+                    style={authStyles.textInput}
+                    placeholder="Enter email"
+                    onChangeText={handleChange('email')}
+                    value={values.email}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                  {errors.email && (
+                    <Text style={authStyles.errorText}>
+                      *{errors.email}
+                    </Text>
+                  )}
+                </View>
 
-            {/* Sign Up Button */}
-            <TouchableOpacity
-              style={[
-                authStyles.authButton,
-              ]}
-              onPress={handleSignUp}
-            >
-              <Text style={authStyles.buttonText}>
-                Sign up
-              </Text>
-            </TouchableOpacity>
+                {/* Password Input */}
+                <View style={authStyles.inputContainer}>
+                  <Text style={authStyles.labelInput}>Password</Text>
+                  <TextInput
+                    style={authStyles.textInput}
+                    placeholder="Enter password"
+                    onChangeText={handleChange('password')}
+                    value={values.password}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                  />
+                  {errors.password && (
+                    <Text style={authStyles.errorText}>
+                      *{errors.password}
+                    </Text>
+                  )}
+                  <TouchableOpacity
+                    style={authStyles.eyeButton}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Ionicons
+                      name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                      size={20}
+                    />
+                  </TouchableOpacity>
+                </View>
 
-            {/* Sign In Link */}
-            <TouchableOpacity
-              style={authStyles.linkContainer}
-              onPress={() => router.back()}
-            >
-              <Text style={authStyles.linkText}>
-                Already have an account?{' '}
-                <Text style={authStyles.link}>Sign in</Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
+                {/* Sign Up Button */}
+                <TouchableOpacity
+                  style={[
+                    authStyles.authButton,
+                  ]}
+                  onPress={handleSubmit as any}
+                  disabled={loading}
+                  activeOpacity={0.8}
+                >
+                  <Text style={authStyles.buttonText}>
+                    {loading ? 'Signing up...' : 'Sign up'}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Sign In Link */}
+                <TouchableOpacity
+                  style={authStyles.linkContainer}
+                  onPress={() => router.back()}
+                >
+                  <Text style={authStyles.linkText}>
+                    Already have an account?{' '}
+                    <Text style={authStyles.link}>Sign in</Text>
+                  </Text>
+                </TouchableOpacity>
+
+              </View>
+            )}
+          </Formik>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

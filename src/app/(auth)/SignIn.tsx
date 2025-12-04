@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import Toast from "react-native-root-toast";
 
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -18,35 +19,26 @@ import {
   View,
 } from 'react-native';
 import { loginAPI } from '@/utils/api';
+import { Formik } from 'formik';
+import { SignInSchema } from '@/utils/validate.schema';
 
 const SignInScreen = () => {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      let toast = Toast.show('Please fill all the fields', {
-        duration: 2000,
-        animation: true,
-        backgroundColor: '#E13F33',
-        opacity: 1,
-        position: -60,
-      })
-      return;
-    }
+  const handleSignIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const response = await loginAPI(email, password);
       if (response.data) { // response.status === 200
         let toast = Toast.show('Signed in successfully', {
           duration: 2000,
           animation: true,
           backgroundColor: '#04B20C',
-          opacity: 1,
+          opacity: 0.9,
           position: -60,
         })
         router.replace('/(tabs)/Home');
@@ -56,12 +48,14 @@ const SignInScreen = () => {
           duration: 2000,
           animation: true,
           backgroundColor: '#E13F33',
-          opacity: 1,
+          opacity: 0.9,
           position: -60,
         })
       }
     } catch (error) {
       console.error('Registration Error:', error);
+    } finally {
+      setLoading(false);
     }
 
     // setTimeout(() => {
@@ -101,68 +95,98 @@ const SignInScreen = () => {
           <Text style={authStyles.title}>Welcome Back</Text>
 
           {/* Form Container */}
-          <View style={authStyles.formContainer}>
-            {/* Email Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Enter email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+          <Formik
+            validationSchema={SignInSchema}
+            initialValues={{ email: '', password: '' }}
+            onSubmit={values => handleSignIn(values.email, values.password)}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+              <View style={authStyles.formContainer}>
 
-            {/* Password */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Enter password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              {/* Show Password */}
-              <TouchableOpacity
-                style={authStyles.eyeButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <Ionicons
-                  name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                  size={20}
-                  corlor={COLORS.textLight}
-                />
-              </TouchableOpacity>
-            </View>
+                {/* Email Input */}
+                <View style={authStyles.inputContainer}>
+                  <Text style={authStyles.labelInput}>Email</Text>
 
-            {/* Sign In Button */}
-            <TouchableOpacity
-              style={[
-                authStyles.authButton,
-                loading && authStyles.buttonDisabled,
-              ]}
-              onPress={handleSignIn}
-              disabled={loading}
-              activeOpacity={0.8}
-            >
-              <Text style={authStyles.buttonText}>
-                {loading ? 'Signing In...' : 'Sign In'}
-              </Text>
-            </TouchableOpacity>
+                  <TextInput
+                    style={authStyles.textInput}
+                    placeholder="Enter email"
+                    // value={email}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
 
-            {/* Sign Up Link */}
-            <TouchableOpacity
-              style={authStyles.linkContainer}
-              onPress={() => router.push('SignUp' as never)}
-            >
-              <Text style={authStyles.linkText}>
-                Don&apos;t have an account?{' '}
-                <Text style={authStyles.link}>Sign up</Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                  />
+                  {errors.email && (
+                    <Text style={authStyles.errorText}>
+                      *{errors.email}
+                    </Text>
+                  )}
+                </View>
+
+                {/* Password */}
+                <View style={authStyles.inputContainer}>
+                  <Text style={authStyles.labelInput}>Password</Text>
+                  <TextInput
+                    style={authStyles.textInput}
+                    placeholder="Enter password"
+                    // value={password}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+
+                    onChangeText={handleChange('password')}
+                    value={values.password}
+                  />
+                  {errors.password && (
+                    <Text style={authStyles.errorText}>
+                      *{errors.password}
+                    </Text>
+                  )}
+                  {/* Show Password */}
+                  <TouchableOpacity
+                    style={authStyles.eyeButton}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Ionicons
+                      name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                      size={20}
+                      corlor={COLORS.textLight}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Sign In Button */}
+                <TouchableOpacity
+                  style={[
+                    authStyles.authButton,
+                    loading && authStyles.buttonDisabled,
+                  ]}
+                  onPress={handleSubmit as any}
+                  disabled={loading}
+                  activeOpacity={0.8}
+                >
+                  <Text style={authStyles.buttonText}>
+                    {loading ? 'Signing in...' : 'Sign in'}
+                  </Text>
+                  {/* {loading && (<ActivityIndicator />)} */}
+                </TouchableOpacity>
+
+                {/* Sign Up Link */}
+                <TouchableOpacity
+                  style={authStyles.linkContainer}
+                  onPress={() => router.push('SignUp' as never)}
+                >
+                  <Text style={authStyles.linkText}>
+                    Don&apos;t have an account?{' '}
+                    <Text style={authStyles.link}>Sign up</Text>
+                  </Text>
+                </TouchableOpacity>
+
+              </View>
+            )}
+          </Formik>
+
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

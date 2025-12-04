@@ -13,13 +13,13 @@ export const registerAPI = (email: string, name: string, password: string) => {
 export const loginAPI = (email: string, password: string) => {
     const url = "/auth/login";
     return axios.post<IbackendResponse>(url, {
-        "grant-type": 'password',
+        // "grant-type": 'password',
         username: email,
         password,
-    },
-        {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        });
+    });
+    // {
+    //     headers: {
+    //         'Content-Type': 'application/x-www-form-urlencoded'
+    //     }
+    // });
 }

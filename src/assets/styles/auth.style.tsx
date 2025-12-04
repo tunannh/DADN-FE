@@ -18,17 +18,17 @@ export const authStyles = StyleSheet.create({
     paddingTop: 40,
   },
   imageContainer: {
-    height: height * 0.3,
-    marginBottom: 30,
+    height: height * 0.2,
+    marginBottom: 50,
     justifyContent: 'center',
     alignItems
       : 'center',
   },
   imageContainerSignUp: {
     height: height * 0.15,
-    marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
   },
   image: {
     width: 320,
@@ -52,8 +52,21 @@ export const authStyles = StyleSheet.create({
     flex: 1
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 30,
     position: 'relative',
+  },
+  labelInput: {
+    fontSize: 18,
+    color: COLORS.titleColor,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  errorText: {
+    position: 'absolute',
+    bottom: -20,
+    left: 10,
+    fontSize: 12,
+    color: 'red',
   },
   textInput: {
     fontSize: 16,
@@ -66,8 +79,8 @@ export const authStyles = StyleSheet.create({
   },
   eyeButton: {
     position: 'absolute',
-    right: 16,
-    top: 16,
+    right: 5,
+    top: 45,
     padding: 4,
   },
   authButton: {
