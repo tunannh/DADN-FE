@@ -7,7 +7,7 @@ const { height } = Dimensions.get("window");
 export const authStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bgColor,
   },
   keyboardView: {
     flex: 1,
@@ -25,11 +25,10 @@ export const authStyles = StyleSheet.create({
       : 'center',
   },
   imageContainerSignUp: {
-    height: height * 0.1,
-    marginBottom: 30,
+    height: height * 0.15,
+    marginBottom: 10,
     justifyContent: 'center',
-    alignItems
-      : 'center',
+    alignItems: 'center',
   },
   image: {
     width: 320,
@@ -58,13 +57,12 @@ export const authStyles = StyleSheet.create({
   },
   textInput: {
     fontSize: 16,
-    color: COLORS.text,
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderWidth: 2,
-    backgroundColor: COLORS.background,
-    borderColor: COLORS.border,
-    borderRadius: 2
+    backgroundColor: COLORS.bgColor,
+    borderColor: COLORS.borderColor,
+    borderRadius: 15
   },
   eyeButton: {
     position: 'absolute',
@@ -83,7 +81,7 @@ export const authStyles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.white,
     textAlign: 'center',
@@ -94,10 +92,9 @@ export const authStyles = StyleSheet.create({
   },
   linkText: {
     fontSize: 16,
-    color: COLORS.textLight,
   },
   link: {
-    color: COLORS.primary,
-    fontWeight: 600
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   }
 })

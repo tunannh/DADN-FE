@@ -1,11 +1,9 @@
-import { COLORS } from '@/constants/colors';
 import { authStyles } from '@/assets/styles/auth.style';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,38 +13,80 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { registerAPI } from '@/utils/api';
+import Toast from "react-native-root-toast";
 
 const SignUp = () => {
   const router = useRouter();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
 
   const handleSignUp = async () => {
-    if (!email || !password) {
-      return Alert.alert('Please fill all the fields');
+    if (!email || !password || !name) {
+      let toast = Toast.show('Please fill all the fields', {
+        duration: 2000,
+        animation: true,
+        backgroundColor: '#ECB90D',
+        opacity: 1,
+        position: -60,
+      })
+      return;
     }
 
-    if (password.length < 6)
-      return Alert.alert('Error', 'Password must be at least 6 characters');
+    if (password.length < 6) {
+      let toast = Toast.show('Password must be at least 6 characters', {
+        duration: 2000,
+        animation: true,
+        backgroundColor: '#ECB90D',
+        opacity: 1,
+        position: -60,
+      })
+      return;
+    }
 
-    setLoading(true);
+    // setLoading(true);
 
-    setTimeout(() => {
-      try {
-        console.log('Email', email);
-        console.log('Password', password);
-      } catch (err: any) {
-        Alert.alert('Error', err.errors?.[0]?.message || 'Sign Up failed');
-        console.error(JSON.stringify(err, null, 2));
-      } finally {
-        setLoading(false);
-        console.log('Sign Up Successful');
+    try {
+      const response = await registerAPI(email, name, password);
+      if (response.data) { // response.status === 200
+        let toast = Toast.show('Account created successfully', {
+          duration: 2000,
+          animation: true,
+          backgroundColor: '#04B20C',
+          opacity: 1,
+          position: -60,
+        })
+        router.replace('/(auth)/SignIn');
       }
-    }, 3000);
+      else { // email already exists
+        let toast = Toast.show('Email is invalid or already exists', {
+          duration: 2000,
+          animation: true,
+          backgroundColor: '#E13F33',
+          opacity: 1,
+          position: -60,
+        })
+      }
+    } catch (error) {
+      console.error('Registration Error:', error);
+    }
+    // setTimeout(() => {
+    //   try {
+    //     console.log('Name', name);
+    //     console.log('Email', email);
+    //     console.log('Password', password);
+    //   } catch (err: any) {
+    //     Alert.alert('Error', err.errors?.[0]?.message || 'Sign Up failed');
+    //     console.error(JSON.stringify(err, null, 2));
+    //   } finally {
+    //     setLoading(false);
+    //     console.log('Sign Up Successful');
+    //   }
+    // }, 3000);
   };
 
   return (
@@ -69,15 +109,25 @@ const SignUp = () => {
             />
           </View>
 
-          <Text style={authStyles.title}>Create Account</Text>
+          <Text style={[authStyles.title, { marginTop: 90 }]}>Create Account</Text>
 
           <View style={authStyles.formContainer}>
+            {/* Name Input */}
+            <View style={authStyles.inputContainer}>
+              <TextInput
+                style={authStyles.textInput}
+                placeholder="Enter name"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="none"
+              />
+            </View>
+
             {/* Email Input */}
             <View style={authStyles.inputContainer}>
               <TextInput
                 style={authStyles.textInput}
                 placeholder="Enter email"
-                placeholderTextColor={COLORS.textLight}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -90,7 +140,6 @@ const SignUp = () => {
               <TextInput
                 style={authStyles.textInput}
                 placeholder="Enter password"
-                placeholderTextColor={COLORS.textLight}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -103,7 +152,6 @@ const SignUp = () => {
                 <Ionicons
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                   size={20}
-                  color={COLORS.textLight}
                 />
               </TouchableOpacity>
             </View>
@@ -112,14 +160,11 @@ const SignUp = () => {
             <TouchableOpacity
               style={[
                 authStyles.authButton,
-                loading && authStyles.buttonDisabled,
               ]}
               onPress={handleSignUp}
-              disabled={loading}
-              activeOpacity={0.8}
             >
               <Text style={authStyles.buttonText}>
-                {loading ? 'Creating Account...' : 'Sign Up'}
+                Sign up
               </Text>
             </TouchableOpacity>
 
@@ -130,7 +175,7 @@ const SignUp = () => {
             >
               <Text style={authStyles.linkText}>
                 Already have an account?{' '}
-                <Text style={authStyles.link}>Sign In</Text>
+                <Text style={authStyles.link}>Sign in</Text>
               </Text>
             </TouchableOpacity>
           </View>

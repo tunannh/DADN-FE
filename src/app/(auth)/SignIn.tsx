@@ -2,10 +2,11 @@ import { COLORS } from '@/constants/colors';
 import { authStyles } from '@/assets/styles/auth.style';
 // import { useAuth } from '@/src/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
+import Toast from "react-native-root-toast";
+
 import {
   Alert,
   KeyboardAvoidingView,
@@ -16,11 +17,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { loginAPI } from '@/utils/api';
 
 const SignInScreen = () => {
-  // const navigation = useNavigation();
   const router = useRouter();
-  // const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,25 +30,53 @@ const SignInScreen = () => {
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      Alert.alert('Please fill all the fields');
+      let toast = Toast.show('Please fill all the fields', {
+        duration: 2000,
+        animation: true,
+        backgroundColor: '#E13F33',
+        opacity: 1,
+        position: -60,
+      })
       return;
     }
-
-    setLoading(true);
-
-    setTimeout(() => {
-      try {
-        console.log('Email', email);
-        console.log('Password', password);
-      } catch (err: any) {
-        Alert.alert('Error', err.errors?.[0]?.message || 'Sign in failed');
-        console.error(JSON.stringify(err, null, 2));
-      } finally {
-        setLoading(false);
-        console.log('Sign In Successful');
-        // login();
+    try {
+      const response = await loginAPI(email, password);
+      if (response.data) { // response.status === 200
+        let toast = Toast.show('Signed in successfully', {
+          duration: 2000,
+          animation: true,
+          backgroundColor: '#04B20C',
+          opacity: 1,
+          position: -60,
+        })
+        router.replace('/(tabs)/Home');
       }
-    }, 3000);
+      else { // email or password incorrect
+        let toast = Toast.show('Email or password is incorrect', {
+          duration: 2000,
+          animation: true,
+          backgroundColor: '#E13F33',
+          opacity: 1,
+          position: -60,
+        })
+      }
+    } catch (error) {
+      console.error('Registration Error:', error);
+    }
+
+    // setTimeout(() => {
+    //   try {
+    //     console.log('Email', email);
+    //     console.log('Password', password);
+    //   } catch (err: any) {
+    //     Alert.alert('Error', err.errors?.[0]?.message || 'Sign in failed');
+    //     console.error(JSON.stringify(err, null, 2));
+    //   } finally {
+    //     setLoading(false);
+    //     console.log('Sign In Successful');
+    //     // login();
+    //   }
+    // }, 3000);
   };
 
   return (
@@ -79,7 +107,6 @@ const SignInScreen = () => {
               <TextInput
                 style={authStyles.textInput}
                 placeholder="Enter email"
-                placeholderTextColor={COLORS.textLight}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -92,7 +119,6 @@ const SignInScreen = () => {
               <TextInput
                 style={authStyles.textInput}
                 placeholder="Enter password"
-                placeholderTextColor={COLORS.textLight}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
