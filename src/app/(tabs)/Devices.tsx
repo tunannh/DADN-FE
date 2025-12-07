@@ -9,6 +9,7 @@ import SearchBar from '@/components/Search-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { useDeviceStore } from '@/store/device-store';
+import { useDevices } from '@/utils/devices.context';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,10 +46,7 @@ const styles = StyleSheet.create({
 
 const Devices = () => {
   const router = useRouter();
-  const { listDevices } = useDeviceStore();
-  const [isPumpActive, setIsPumpActive] = useState<boolean>(false)
-  const [isFanActive, setIsFanActive] = useState<boolean>(false)
-  const [isLightActive, setIsLightActive] = useState<boolean>(false)
+  const { devices } = useDevices();
 
   return (
     <SafeAreaView style={{ backgroundColor: COLORS.bgColor, flex: 1 }}>
@@ -62,12 +60,40 @@ const Devices = () => {
           <MaterialIcons name="add" size={24} color="white" />
           <Text style={{ color: 'white', fontSize: 16 }}>Add device</Text>
         </TouchableOpacity>
-
       </View>
 
       <ScrollView style={styles.container}>
         <View style={styles.device_box}>
-          <DeviceBox
+
+          {devices.length === 0 ? (
+            <Text>Danh sách thiết bị trống</Text>
+          ) : (
+            devices.map((device) => (
+              <View key={device.device_id}>
+                <DeviceBox
+                  deviceName={device.name}
+                  deviceId={device.device_id.toString()}
+                  status={device.status}
+                  icon={device.name.toLowerCase().includes('pump') ? (
+                    <MaterialCommunityIcons name="water-pump" size={50} color={COLORS.pump_color} />
+                  ) : device.name.toLowerCase().includes('fan') ? (
+                    <MaterialCommunityIcons name="fan" size={50} color={COLORS.fan_color} />
+                  ) : device.name.toLowerCase().includes('light') ? (
+                    <Foundation name="lightbulb" size={50} color={COLORS.light_color} />
+                  ) : null}
+                />
+              </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  )
+}
+
+export default Devices;
+
+{/* <DeviceBox
             deviceName='Pump'
             active={isPumpActive}
             toggle={setIsPumpActive}
@@ -84,21 +110,4 @@ const Devices = () => {
             active={isLightActive}
             toggle={setIsLightActive}
             icon={<Foundation name="lightbulb" size={50} color={COLORS.light_color} />}
-          />
-
-          {listDevices.length !== 0 && listDevices.map((device) => {
-            return <View key={device.id}>
-              <DeviceBox
-                deviceName={device.deviceName}
-                deviceId={device.id}
-                active={device.isActive}
-              />
-            </View>
-          })}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
-
-export default Devices;
+          /> */}

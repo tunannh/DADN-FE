@@ -1,6 +1,6 @@
 import { COLORS } from '@/constants/colors';
 import React, { useState } from 'react'
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import LogData from '@/components/LogData';
@@ -64,18 +64,24 @@ const styles = StyleSheet.create({
 const ViewData = () => {
   const [active, setActive] = useState<'log' | 'env'>('log');
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [pickerDate, setPickerDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [mode, setMode] = useState<'start' | 'end'>('start');
 
   const handleShowPicker = (type: 'start' | 'end') => {
     setMode(type);
+    setPickerDate(type === 'start' ? startDate || new Date() : endDate || new Date());
     setShowPicker(true);
   };
 
   const handleChange = (event: any, selectedDate?: Date) => {
-    setShowPicker(false);
+    if (event.type === "dismissed") {
+      setShowPicker(false);
+      return;
+    }
+
     if (selectedDate) {
       if (mode === 'start') setStartDate(selectedDate);
       else setEndDate(selectedDate);
@@ -91,7 +97,7 @@ const ViewData = () => {
       <View style={styles.container}>
         <View><Text style={styles.title}>Data</Text></View>
         <View style={styles.menu}>
-          <Pressable
+          <TouchableOpacity
             style={[
               styles.menuItem,
               { backgroundColor: active === 'log' ? COLORS.buttonBackground : 'white' },
@@ -99,11 +105,11 @@ const ViewData = () => {
             onPress={() => setActive('log')}
           >
             <Text style={{ color: active === 'log' ? 'white' : 'black', textAlign: 'center' }}>
-              Log
+              Watering History
             </Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable
+          <TouchableOpacity
             style={[
               styles.menuItem,
               { backgroundColor: active === 'env' ? COLORS.buttonBackground : 'white' },
@@ -113,37 +119,44 @@ const ViewData = () => {
             <Text style={{ color: active === 'env' ? 'white' : 'black', textAlign: 'center' }}>
               Environment
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.timeRange}>
           <View style={styles.timeRangeItem}>
             <Text style={{ color: COLORS.textColor, fontSize: 18 }}>Start time</Text>
             <TouchableOpacity style={styles.inputBox} onPress={() => handleShowPicker('start')}>
-              <Text style={styles.dateFormat}>{formatDate(startDate)}</Text>
+              <Text style={styles.dateFormat}>{startDate ? formatDate(startDate) : 'Từ'}</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.timeRangeItem}>
             <Text style={{ color: COLORS.textColor, fontSize: 18 }}>End time</Text>
             <TouchableOpacity style={styles.inputBox} onPress={() => handleShowPicker('end')}>
-              <Text style={styles.dateFormat}>{formatDate(endDate)}</Text>
+              <Text style={styles.dateFormat}>{endDate ? formatDate(endDate) : 'Đến'}</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
       <ScrollView style={styles.container}>
         {active === 'log' ? (
-          <View style={styles.data}><LogData /></View>
+          <View style={styles.data}>
+            <LogData
+              startfilter={(startDate && endDate) ? startDate : undefined}
+              endfilter={(startDate && endDate) ? endDate : undefined}
+            />
+          </View>
         ) : (
-          <View style={styles.data}><EnvData /></View>
+          <View style={styles.data}>
+            <EnvData />
+          </View>
         )}
       </ScrollView>
 
 
       {showPicker && (
         <DateTimePicker
-          value={mode === 'start' ? startDate : endDate}
+          value={pickerDate}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
           onChange={handleChange}

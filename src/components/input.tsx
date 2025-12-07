@@ -14,11 +14,10 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderRadius: 15,
+        borderRadius: 10,
         paddingVertical: 15,
         paddingHorizontal: 10,
-        fontSize: 14,
-        color: COLORS.textColor
+        fontSize: 15,
     },
     eye: {
         position: 'absolute',

@@ -26,52 +26,28 @@ const SignUp = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [pendingVerification, setPendingVerification] = useState(false);
 
+  const toastShow = (message: string, color: string) => {
+    Toast.show(message, {
+      duration: 2000,
+      animation: true,
+      backgroundColor: color,
+      opacity: 1,
+      position: -60,
+    })
+  }
   const handleSignUp = async (name: string, email: string, password: string) => {
-    if (!email || !password || !name) {
-      let toast = Toast.show('Please fill all the fields', {
-        duration: 2000,
-        animation: true,
-        backgroundColor: '#ECB90D',
-        opacity: 1,
-        position: -60,
-      })
-      return;
-    }
-
-    if (password.length < 6) {
-      let toast = Toast.show('Password must be at least 6 characters', {
-        duration: 2000,
-        animation: true,
-        backgroundColor: '#ECB90D',
-        opacity: 1,
-        position: -60,
-      })
-      return;
-    }
-
-    // setLoading(true);
-
     try {
       setLoading(true);
       const response = await registerAPI(name, email, password);
       if (response.data) { // response.status === 200
-        let toast = Toast.show('Account created successfully', {
-          duration: 2000,
-          animation: true,
-          backgroundColor: '#04B20C',
-          opacity: 1,
-          position: -60,
-        })
-        router.replace('/(auth)/SignIn');
+        toastShow('Account created successfully! Please sign in.', '#04B20C');
+        setTimeout(() => {
+          router.replace('/(auth)/SignIn');
+        }, 1000);
+
       }
       else { // email already exists
-        let toast = Toast.show('Email is invalid or already exists', {
-          duration: 2000,
-          animation: true,
-          backgroundColor: '#E13F33',
-          opacity: 1,
-          position: -60,
-        })
+        toastShow('Sign Up failed! Email is invalid or already exists.', '#E13F33');
       }
     } catch (error) {
       console.error('Registration Error:', error);

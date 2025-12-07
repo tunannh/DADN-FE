@@ -21,56 +21,47 @@ import {
 import { loginAPI } from '@/utils/api';
 import { Formik } from 'formik';
 import { SignInSchema } from '@/utils/validate.schema';
+import { useUserTokenContext } from '@/utils/userToken.context';
 
 const SignInScreen = () => {
   const router = useRouter();
+  const { set_access_token, set_token_type } = useUserTokenContext();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
 
+  const toastShow = (message: string, color: string) => {
+    Toast.show(message, {
+      duration: 2000,
+      animation: true,
+      backgroundColor: color,
+      opacity: 1,
+      position: -60,
+    })
+  }
   const handleSignIn = async (email: string, password: string) => {
     try {
       setLoading(true);
       const response = await loginAPI(email, password);
       if (response.data) { // response.status === 200
-        let toast = Toast.show('Signed in successfully', {
-          duration: 2000,
-          animation: true,
-          backgroundColor: '#04B20C',
-          opacity: 0.9,
-          position: -60,
-        })
-        router.replace('/(tabs)/Home');
+        toastShow('Signed in successfully', '#04B20C');
+
+        set_access_token(response.data.access_token);
+        set_token_type(response.data.token_type);
+
+        setTimeout(() => {
+          router.replace('/(tabs)/Home');
+        }, 300);
       }
       else { // email or password incorrect
-        let toast = Toast.show('Email or password is incorrect', {
-          duration: 2000,
-          animation: true,
-          backgroundColor: '#E13F33',
-          opacity: 0.9,
-          position: -60,
-        })
+        toastShow('Sign In failed! Email or password is incorrect.', '#E13F33');
       }
     } catch (error) {
-      console.error('Registration Error:', error);
+      console.error('Login Error:', error);
     } finally {
       setLoading(false);
     }
-
-    // setTimeout(() => {
-    //   try {
-    //     console.log('Email', email);
-    //     console.log('Password', password);
-    //   } catch (err: any) {
-    //     Alert.alert('Error', err.errors?.[0]?.message || 'Sign in failed');
-    //     console.error(JSON.stringify(err, null, 2));
-    //   } finally {
-    //     setLoading(false);
-    //     console.log('Sign In Successful');
-    //     // login();
-    //   }
-    // }, 3000);
   };
 
   return (
