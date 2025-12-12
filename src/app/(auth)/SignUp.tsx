@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 import { registerAPI } from '@/utils/api';
-import Toast from "react-native-root-toast";
+import Toast from "react-native-toast-message";
 import { Formik } from 'formik';
 import { SignUpSchema } from '@/utils/validate.schema';
 
@@ -28,24 +28,24 @@ const SignUp = () => {
 
   const handleSignUp = async (name: string, email: string, password: string) => {
     if (!email || !password || !name) {
-      let toast = Toast.show('Please fill all the fields', {
-        duration: 2000,
-        animation: true,
-        backgroundColor: '#ECB90D',
-        opacity: 1,
-        position: -60,
-      })
+      // let toast = Toast.show('Please fill all the fields', {
+      //   duration: 2000,
+      //   animation: true,
+      //   backgroundColor: '#ECB90D',
+      //   opacity: 1,
+      //   position: -60,
+      // })
       return;
     }
 
     if (password.length < 6) {
-      let toast = Toast.show('Password must be at least 6 characters', {
-        duration: 2000,
-        animation: true,
-        backgroundColor: '#ECB90D',
-        opacity: 1,
-        position: -60,
-      })
+      // let toast = Toast.show('Password must be at least 6 characters', {
+      //   duration: 2000,
+      //   animation: true,
+      //   backgroundColor: '#ECB90D',
+      //   opacity: 1,
+      //   position: -60,
+      // })
       return;
     }
 
@@ -55,29 +55,30 @@ const SignUp = () => {
       setLoading(true);
       const response = await registerAPI(name, email, password);
       if (response.data) { // response.status === 200
-        let toast = Toast.show('Account created successfully', {
-          duration: 2000,
-          animation: true,
-          backgroundColor: '#04B20C',
-          opacity: 1,
-          position: -60,
-        })
+        // let toast = Toast.show('Account created successfully', {
+        //   duration: 2000,
+        //   animation: true,
+        //   backgroundColor: '#04B20C',
+        //   opacity: 1,
+        //   position: -60,
+        // })
         router.replace('/(auth)/SignIn');
       }
       else { // email already exists
-        let toast = Toast.show('Email is invalid or already exists', {
-          duration: 2000,
-          animation: true,
-          backgroundColor: '#E13F33',
-          opacity: 1,
-          position: -60,
-        })
+        // let toast = Toast.show('Email is invalid or already exists', {
+        //   duration: 2000,
+        //   animation: true,
+        //   backgroundColor: '#E13F33',
+        //   opacity: 1,
+        //   position: -60,
+        // })
       }
     } catch (error) {
       console.error('Registration Error:', error);
     } finally {
       setLoading(false);
     }
+    
     // setTimeout(() => {
     //   try {
     //     console.log('Name', name);

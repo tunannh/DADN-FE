@@ -4,25 +4,17 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "components/*": [
-        "src/components/*"
-      ],
-      "constanst/*": [
-        "src/constanst/*"
-      ],
-      "assets/*": [
-        "src/constanst/*"
-      ]
+      "@/*": ["src/*"],
+      "components/*": ["src/components/*"],
+      "constanst/*": ["src/constanst/*"],
+      "assets/*": ["src/constanst/*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
+    "expo-env.d.ts"
     // "src/app/_layout.jsx"
   ]
 }

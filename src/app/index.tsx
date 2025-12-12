@@ -24,9 +24,9 @@ const WelcomePage = () => {
     >
       <View style={styles.container}>
         <Text style={styles.app_name}>Smart farm</Text>
-        <Button title={"Vào trang chủ"} onPress={() => router.navigate("/(tabs)/Home")} />
+        {/* <Button title={"Vào trang chủ"} onPress={() => router.navigate("/(tabs)/Home")} /> */}
         <Button title={"Sign in"} onPress={() => router.navigate("/(auth)/SignIn")} />
-        <Button title={"Sign up"} onPress={() => router.navigate("/(auth)/SignUp")} />
+        {/* <Button title={"Sign up"} onPress={() => router.navigate("/(auth)/SignUp")} /> */}
       </View>
     </ImageBackground>
   )

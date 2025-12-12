@@ -1,10 +1,10 @@
 import { COLORS } from "@/constants/colors";
 import { Stack } from "expo-router";
-import { RootSiblingParent } from "react-native-root-siblings";
+import Toast from 'react-native-toast-message'; // <-- Import mới
 
 const RootLayout = () => {
   return (
-    <RootSiblingParent>
+    <>
       <Stack
         screenOptions={{
           headerStyle: {
@@ -32,37 +32,33 @@ const RootLayout = () => {
           name="(tabs)"
           options={{
             headerTitle: "Trang chủ",
-            headerShown: false
+            headerShown: false,
+            gestureEnabled: false,
           }}
         />
+        {/* Các màn hình khác giữ nguyên */}
         <Stack.Screen
           name="device_actions/Device-infor"
-          options={{
-            headerTitle: "Device Information",
-          }}
+          options={{ headerTitle: "Device Information" }}
         />
         <Stack.Screen
           name="device_actions/Add-device"
-          options={{
-            headerTitle: "Add Device",
-          }}
+          options={{ headerTitle: "Add Device" }}
         />
         <Stack.Screen
           name="setting/setting"
-          options={{
-            headerTitle: "Setting",
-          }}
+          options={{ headerTitle: "Setting" }}
         />
         <Stack.Screen
           name="manage_user/ManageUser"
-          options={{
-            headerTitle: "Manage User",
-          }}
+          options={{ headerTitle: "Manage User" }}
         />
       </Stack>
-    </RootSiblingParent>
-  );
 
+      {/* Đặt Toast ở đây để nó luôn nằm trên cùng */}
+      <Toast />
+    </>
+  );
 }
 
 export default RootLayout;

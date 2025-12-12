@@ -1,104 +1,103 @@
-import { COLORS } from '@/constants/colors';
-import React, { useState } from 'react'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Components & Constants
+import { COLORS } from '@/constants/colors';
 import DeviceBox from '@/components/Device-box';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Foundation from '@expo/vector-icons/Foundation';
-import SearchBar from '@/components/Search-bar';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from 'expo-router';
-import { useDeviceStore } from '@/store/device-store';
+
+// Controller
+import { useDevicesController } from '@/controllers/useDevicesController';
+
+const Devices = () => {
+  const { 
+    devices, 
+    isLoading,
+    getDeviceConfig, 
+    handleDelete 
+  } = useDevicesController();
+
+  // Hiển thị loading
+  if (isLoading && devices.length === 0) {
+     return (
+        <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', flex: 1 }]}>
+           <ActivityIndicator size="large" color={COLORS.buttonBackground} />
+        </SafeAreaView>
+     )
+  }
+
+  return (
+    <SafeAreaView style={{ backgroundColor: COLORS.bgColor, flex: 1 }}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Devices</Text>
+      </View>
+
+      {/* Danh sách thiết bị */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.device_list}>
+          {devices.map((device) => {
+            const icon = getDeviceConfig(device.feed_key);
+            const isSensor = device.device_type === 'sensor';
+
+            return (
+              <DeviceBox
+                key={device.device_id}
+                deviceId={device.device_id}
+                deviceName={device.name}
+                isActive={device.status === 'active'}
+                // Luôn set isSensor=true để disable nút bấm trạng thái 
+                // (vì API toggle không có, nên ta chặn người dùng bấm)
+                isSensor={true} 
+                icon={icon}
+                onDelete={() => handleDelete(device.device_id)}
+                // Không truyền onToggle nữa
+              />
+            );
+          })}
+
+          {!isLoading && devices.length === 0 && (
+            <Text style={styles.emptyText}>
+              No devices found.
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.bgColor,
     paddingHorizontal: 20
   },
+  headerContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    backgroundColor: COLORS.bgColor,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0'
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40
+  },
   title: {
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 28,
     color: COLORS.titleColor,
     fontWeight: 'bold',
   },
-  search_bar: {
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  device_box: {
-    gap: 20,
+  device_list: {
     paddingVertical: 12,
   },
-  add: {
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.buttonBackground,
-    borderRadius: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    gap: 6,
-    marginBottom: 12,
+  emptyText: {
+    textAlign: 'center', 
+    color: '#888', 
+    marginTop: 40, 
+    fontSize: 16
   }
 })
-
-const Devices = () => {
-  const router = useRouter();
-  const { listDevices } = useDeviceStore();
-  const [isPumpActive, setIsPumpActive] = useState<boolean>(false)
-  const [isFanActive, setIsFanActive] = useState<boolean>(false)
-  const [isLightActive, setIsLightActive] = useState<boolean>(false)
-
-  return (
-    <SafeAreaView style={{ backgroundColor: COLORS.bgColor, flex: 1 }}>
-      <View style={styles.container}>
-        <View><Text style={styles.title}>Devices</Text></View>
-        <View style={styles.search_bar}><SearchBar /></View>
-        <TouchableOpacity
-          style={styles.add}
-          onPress={() => router.navigate('/device_actions/Add-device')}
-        >
-          <MaterialIcons name="add" size={24} color="white" />
-          <Text style={{ color: 'white', fontSize: 16 }}>Add device</Text>
-        </TouchableOpacity>
-
-      </View>
-
-      <ScrollView style={styles.container}>
-        <View style={styles.device_box}>
-          <DeviceBox
-            deviceName='Pump'
-            active={isPumpActive}
-            toggle={setIsPumpActive}
-            icon={<MaterialCommunityIcons name="water-pump" size={50} color={COLORS.pump_color} />}
-          />
-          <DeviceBox
-            deviceName='Fan'
-            active={isFanActive}
-            toggle={setIsFanActive}
-            icon={<MaterialCommunityIcons name="fan" size={50} color={COLORS.fan_color} />}
-          />
-          <DeviceBox
-            deviceName='Lighting system'
-            active={isLightActive}
-            toggle={setIsLightActive}
-            icon={<Foundation name="lightbulb" size={50} color={COLORS.light_color} />}
-          />
-
-          {listDevices.length !== 0 && listDevices.map((device) => {
-            return <View key={device.id}>
-              <DeviceBox
-                deviceName={device.deviceName}
-                deviceId={device.id}
-                active={device.isActive}
-              />
-            </View>
-          })}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
 
 export default Devices;

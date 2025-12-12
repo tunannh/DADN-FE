@@ -1,10 +1,11 @@
 import { COLORS } from "@/constants/colors";
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { handleLogout } from "@/controllers/useLogout";
 
 const styles = StyleSheet.create({
     container: {
@@ -55,6 +56,8 @@ const styles = StyleSheet.create({
 })
 
 const Settings = () => {
+    
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
@@ -87,7 +90,9 @@ const Settings = () => {
             </View>
 
             <View style={styles.logout}>
-                <Text style={styles.logout_text}>Logout</Text>
+                <TouchableOpacity onPress={handleLogout}>
+                  <Text style={styles.logout_text}>Logout</Text>
+                </TouchableOpacity>
             </View>
         </View>
     )
