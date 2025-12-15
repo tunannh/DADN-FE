@@ -2,7 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Platform } from 'react-native';
 
-const backendUrl = Platform.OS === 'android' ? process.env.EXPO_PUBLIC_ANDROID_API_URL : process.env.EXPO_PUBLIC_IOS_API_URL;
+// const backendUrl = Platform.OS === 'android' ? process.env.EXPO_PUBLIC_ANDROID_API_URL : process.env.EXPO_PUBLIC_IOS_API_URL;
+
+const backendUrl =
+    Platform.OS === 'android' && !__DEV__
+        ? process.env.EXPO_PUBLIC_API_URL
+        : Platform.OS === 'android'
+            ? process.env.EXPO_PUBLIC_ANDROID_EMULATOR_API_URL
+            : process.env.EXPO_PUBLIC_API_URL;
 
 const instance = axios.create({
     baseURL: backendUrl,

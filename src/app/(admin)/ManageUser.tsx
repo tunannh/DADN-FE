@@ -406,6 +406,7 @@ const manageUserStyles = StyleSheet.create({
     color: COLORS.titleColor,
     fontWeight: 'bold',
     marginBottom: 30,
+    marginTop: 20
   },
   searchContainer: {
     flexDirection: 'row',

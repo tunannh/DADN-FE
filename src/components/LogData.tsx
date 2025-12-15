@@ -54,6 +54,7 @@ const LogData = (props: IProps) => {
     const { startfilter, endfilter } = props;
     type data = {
         session_id: number;
+        garden_id?: number;
         actuator_id?: number;
         start_time: string;
         end_time: string;
@@ -85,10 +86,6 @@ const LogData = (props: IProps) => {
         const start = new Date(item.start_time);
         const end = new Date(item.end_time);
 
-        // const day = start.getDate();
-        // const month = start.getMonth() + 1;
-        // const year = start.getFullYear();
-
         const startTime = formatTime(start);
         const endTime = formatTime(end);
 
@@ -116,6 +113,7 @@ const LogData = (props: IProps) => {
                 if (response.data) {
                     setLogData(response.data.map(parseWateringSession));
                 }
+                else console.log("No watering history data");
             };
             fetchData();
         } catch (error) {

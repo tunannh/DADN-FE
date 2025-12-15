@@ -122,7 +122,7 @@ const DeviceBox = (props: IProps) => {
                                 <Fontisto name="toggle-off" size={45} color="#CC1800" />
                             )}
                         </TouchableOpacity> */}
-                    <View style={[styles.status, { backgroundColor: status === "inactive" ? '#13E633' : '#CC1800' }]}>
+                    <View style={[styles.status, { backgroundColor: status === "active" ? '#13ce2fff' : '#CC1800' }]}>
                         <Text style={{ color: 'white', fontSize: 16 }}>{status}</Text>
                     </View>
 

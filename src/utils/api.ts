@@ -59,6 +59,16 @@ export const deleteDeviceAPI = (device_id: string) => {
     return axios.delete(url);
 }
 
+export const pumpStatusAPI = () => {
+    const url = "/devices/pump/state";
+    return axios.get(url);
+}
+
+export const changePumpStatusAPI = (action: string) => {
+    const url = "/devices/pump/control";
+    return axios.post(url, { action });
+}
+
 export const autoStatus = () => {
     const url = "/automation/status";
     return axios.get(url);
@@ -71,12 +81,33 @@ export const changeAutoStatus = (enabled: boolean) => {
 
 
 // ****************************************************************************
-// Watering History APIs
+// history infor APIs
 // ***************************************************************************
 export const wateringHistoryAPI = () => {
-    const url = "/dashboard/gardens/irrigation-sessions";
+    const url = "/irrigation-sessions";
     return axios.get(url);
 }
+
+export const logsAPI = (
+    params?: {
+        action?: string;
+        event_type?: string;
+        start_time?: string;
+        end_time?: string;
+        limit?: number;
+        offset?: number;
+    }
+) => {
+    return axios.get("/logs", {
+        params,
+    });
+};
+
+export const notificationAPI = () => {
+    const url = "/notifications";
+    return axios.get(url);
+}
+
 
 // ****************************************************************************
 // Sensor Data APIs

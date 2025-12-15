@@ -1,13 +1,14 @@
 import { COLORS } from "@/constants/colors";
-import { useState } from "react";
+import { logsAPI } from "@/utils/api";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native"
 
 const styles = StyleSheet.create({
     container: {
-        gap: 15,
+        gap: 20,
     },
-    dataEnv: {
-        // gap: 5,
+    data: {
+        gap: 10,
         backgroundColor: 'white',
         borderRadius: 15,
         shadowColor: COLORS.titleColor,
@@ -18,90 +19,102 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 12,
     },
-    date: {
-        color: COLORS.textColor,
-        alignSelf: "flex-end"
+    head: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
-    label_value: {
-        flexDirection: "row",
+    body: {
+        flexDirection: 'row',
+        alignItems: "center",
+        gap: 5,
     },
-    label: {
+    action: {
+        fontWeight: "600",
         fontSize: 16,
-        fontWeight: 'bold',
-        color: COLORS.titleColor
-    },
-    value: {
-        fontSize: 16,
-        fontWeight: 'bold',
         color: COLORS.titleColor
     }
+
 })
 
-const EnvData = () => {
+interface IProps {
+    startfilter?: Date;
+    endfilter?: Date
+};
+
+const EnvData = ({ startfilter, endfilter }: IProps) => {
     const [envData, setEnvData] = useState<{
-        id: number;
-        soilMoisure: number;
-        temperature: number;
-        humidity: number;
-        pumbStatus: string;
-        date: string;
-        time: string;
-    }[]>
-        ([{
-            id: 100,
-            soilMoisure: 25,
-            temperature: 28,
-            humidity: 40,
-            pumbStatus: "On",
-            date: "15/10/2025",
-            time: "09:35:12",
-        }, {
-            id: 101,
-            soilMoisure: 25,
-            temperature: 28,
-            humidity: 40,
-            pumbStatus: "On",
-            date: "15/10/2025",
-            time: "09:35:12",
-        },
-        {
-            id: 102,
-            soilMoisure: 25,
-            temperature: 28,
-            humidity: 40,
-            pumbStatus: "On",
-            date: "15/10/2025",
-            time: "09:35:12",
-        },
-        ]);
+        "log_id": number,
+        "event_id": number,
+        "name": string,
+        "description": string,
+        "action": string,
+        "created_at": string,
+        "event_type": string,
+        "occurred_at": string,
+        "source": string
+    }[]>([]);
+
+    useEffect(() => {
+        try {
+            const fetchData = async () => {
+                let params: any = {};
+                if (startfilter && endfilter) {
+                    params = {
+                        start_time: startfilter.toISOString(),
+                        end_time: getEndOfDay(endfilter).toISOString(),
+                        limit: 50
+                    };
+                }
+                const response = await logsAPI(params);
+                if (response.data) {
+                    setEnvData(response.data);
+                }
+            };
+            fetchData();
+        } catch (error) {
+            console.error("Failed to get action history data:", error);
+        }
+    }, [startfilter, endfilter]);
+
+    const getEndOfDay = (date: Date) => {
+        const end = new Date(date);
+        end.setHours(23, 59, 59, 999);
+        return end;
+    };
+
+    const formatDateTime = (isoString: string) => {
+        const date = new Date(isoString);
+
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const seconds = date.getSeconds().toString().padStart(2, "0");
+
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+
+        return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+    };
+
     return (
         <View style={styles.container}>
             {envData.length !== 0 ? (
                 <>
                     {envData.map((item) => (
-                        <View style={styles.dataEnv} key={item.id}>
-                            <View style={styles.label_value}>
-                                <Text style={styles.label}>Soil moisure: </Text>
-                                <Text style={styles.value}>{item.soilMoisure}%</Text>
+                        <View style={styles.data} key={item.log_id}>
+                            <View style={styles.head}>
+                                <Text style={{ color: "#a06704ff", fontWeight: 'bold', fontSize: 18 }}>{item.name}</Text>
+                                <Text style={{ color: COLORS.textColor }}>{formatDateTime(item.occurred_at)}</Text>
+                            </View >
+                            <View style={styles.body}>
+                                <Text style={styles.action}>Message:</Text>
+                                <Text style={{ fontSize: 16 }}>{item.action === "PUMP_ON" ? "Turn on the pump" : (item.action === "PUMP_OFF") ? "Turn off the pump" : item.action}</Text>
                             </View>
-                            <View style={styles.label_value}>
-                                <Text style={styles.label}>Temperature: </Text>
-                                <Text style={styles.value}>{item.temperature}°C </Text>
-                            </View>
-                            <View style={styles.label_value}>
-                                <Text style={styles.label}>Humidity: </Text>
-                                <Text style={styles.value}>{item.humidity}%</Text>
-                            </View>
-                            <View style={styles.label_value}>
-                                <Text style={styles.label}>Pump status: </Text>
-                                <Text style={styles.value}>{item.pumbStatus}</Text>
-                            </View>
-                            <Text style={styles.date}>{item.date} {item.time}</Text>
                         </View>
                     ))}
                 </>
             ) : (
-                <View><Text style={{ color: COLORS.text, fontSize: 16 }}>No data available</Text></View>
+                <View><Text style={{ color: COLORS.titleColor, fontSize: 18 }}>No data available</Text></View>
             )}
         </View>
     )

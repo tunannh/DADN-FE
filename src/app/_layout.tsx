@@ -65,6 +65,12 @@ const RootLayout = () => {
                 headerTitle: "Setting",
               }}
             />
+            <Stack.Screen
+              name="notification/notification"
+              options={{
+                headerTitle: "Notification",
+              }}
+            />
           </Stack>
         </DeviceProvider>
       </RootSiblingParent>

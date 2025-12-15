@@ -44,12 +44,10 @@ const SignInScreen = () => {
       if (response.data) { // response.status === 200
         toastShow('Signed in successfully', '#04B20C');
         await AsyncStorage.setItem('access_token', response.data.access_token);
-        // set_access_token(response.data.access_token);
 
         setTimeout(() => {
           if (response.data.role === 'admin')
             router.replace("/(admin)/ManageUser");
-          // router.replace('/(tabs)/Home');
           else
             router.replace('/(tabs)/Home');
         }, 200);

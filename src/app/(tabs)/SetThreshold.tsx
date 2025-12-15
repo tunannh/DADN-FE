@@ -151,7 +151,7 @@ export default function SetThresholdScreen() {
           <EvilIcons name="search" size={30} color={COLORS.textColor} />
           <TextInput style={styles.inputSearch} placeholder="Search" autoCapitalize="none" />
         </View> */}
-        {/* <View style={{ marginBottom: 10 }}><AutoModeCard /></View> */}
+        <View style={{ marginBottom: 10 }}><AutoModeCard /></View>
         <View style={styles.card}>
           {/* <Text style={styles.updateTime}>Last update: {formatDateTime(tempUpdateTime)}</Text> */}
           {/* Bên trái */}
@@ -164,12 +164,12 @@ export default function SetThresholdScreen() {
           <View style={styles.cardRight}>
             <View style={styles.valuewrap}>
               <Text style={{ fontWeight: "600", fontSize: 15, color: "#0D532E" }}>Min</Text>
-              <View style={styles.value}><Text>{minTemp}°C</Text></View>
+              <View style={styles.value}><Text>{minTemp ? `${minTemp}°C` : 'N/A'}</Text></View>
             </View>
 
             <View style={styles.valuewrap}>
               <Text style={{ fontWeight: "600", fontSize: 15, color: "#0D532E" }}>Max</Text>
-              <View style={styles.value}><Text>{maxTemp}°C</Text></View>
+              <View style={styles.value}><Text>{maxTemp ? `${maxTemp}°C` : 'N/A'}</Text></View>
             </View>
 
             <TouchableOpacity
@@ -193,12 +193,12 @@ export default function SetThresholdScreen() {
           <View style={styles.cardRight}>
             <View style={styles.valuewrap}>
               <Text style={{ fontWeight: "600", fontSize: 15, color: "#0D532E" }}>Min</Text>
-              <View style={styles.value}><Text>{minAir}%</Text></View>
+              <View style={styles.value}><Text>{minAir ? `${minAir}%` : 'N/A'}</Text></View>
             </View>
 
             <View style={styles.valuewrap}>
               <Text style={{ fontWeight: "600", fontSize: 15, color: "#0D532E" }}>Max</Text>
-              <View style={styles.value}><Text>{maxAir}%</Text></View>
+              <View style={styles.value}><Text>{maxAir ? `${maxAir}%` : 'N/A'}</Text></View>
             </View>
 
             <TouchableOpacity
@@ -222,12 +222,12 @@ export default function SetThresholdScreen() {
           <View style={styles.cardRight}>
             <View style={styles.valuewrap}>
               <Text style={{ fontWeight: "600", fontSize: 15, color: "#0D532E" }}>Min</Text>
-              <View style={styles.value}><Text>{minSoil}%</Text></View>
+              <View style={styles.value}><Text>{minSoil ? `${minSoil}%` : 'N/A'}</Text></View>
             </View>
 
             <View style={styles.valuewrap}>
               <Text style={{ fontWeight: "600", fontSize: 15, color: "#0D532E" }}>Max</Text>
-              <View style={styles.value}><Text>{maxSoil}%</Text></View>
+              <View style={styles.value}><Text>{maxSoil ? `${maxSoil}%` : 'N/A'}</Text></View>
             </View>
 
             <TouchableOpacity
@@ -315,26 +315,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 20
   },
-  containerSearch: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    gap: 3,
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 5,
-    marginBottom: 40,
-  },
-  inputSearch: {
-    flex: 1,
-    fontSize: 16,
-    color: COLORS.textColor,
-  },
   card: {
     backgroundColor: '#fff',
     borderRadius: 16,
@@ -345,15 +325,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E6E6E6',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 3,
-      },
-      android: { elevation: 2 },
-    }),
+    //   ...Platform.select({
+    //     ios: {
+    //       shadowColor: '#000',
+    //       shadowOpacity: 0.05,
+    //       shadowOffset: { width: 0, height: 2 },
+    //       shadowRadius: 3,
+    //     },
+    //     android: { elevation: 2 },
+    //   }
+    // ),
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
   },
   updateTime: {
     position: 'absolute',
@@ -405,28 +391,4 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 5
   }
-  // cardRight: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   backgroundColor: '#f5f8f6',
-  //   borderRadius: 10,
-  //   borderWidth: 0.5,
-  //   borderColor: '#dcdcdc',
-  //   paddingVertical: 10,
-  //   paddingHorizontal: 10,
-  //   minWidth: 90,
-  //   justifyContent: 'center',
-  // },
-  // input: {
-  //   flex: 0,
-  //   fontSize: 18,
-  //   color: '#0D532E',
-  //   textAlign: 'right',
-  //   marginRight: 4,
-  // },
-  // unit: {
-  //   fontSize: 16,
-  //   color: '#0D532E',
-  //   opacity: 0.7,
-  // },
 });

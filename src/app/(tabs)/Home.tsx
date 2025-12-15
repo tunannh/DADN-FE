@@ -1,11 +1,13 @@
 import { homeStyles } from '@/assets/styles/home.style';
 import { COLORS } from '@/constants/colors';
-import { autoStatus, changeAutoStatus, sensorDataAPI } from '@/utils/api';
-import { useAutoStatus } from '@/utils/useAutoStatus.context';
+import { changePumpStatusAPI, pumpStatusAPI, sensorDataAPI } from '@/utils/api';
 import { Feather, Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ImageBackground } from 'expo-image';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 import {
   Image,
   ScrollView,
@@ -26,26 +28,38 @@ const Home = () => {
     })
   }
   const [sensorData, setSensorData] = useState<any>(null);
-  const { enabled, set_enabled } = useAutoStatus();
+  const [pumpStatus, setPumpStatus] = useState<boolean | null>(null);
 
+  const isFocused = useIsFocused();
   useEffect(() => {
-    // Fetch sensor data from API when component mounts
-    try {
-      const getSensorData = async () => {
-        const response = await sensorDataAPI();
-        setSensorData(response.data);
-      }
-      const getAutoStatus = async () => {
-        const response = await autoStatus();
-        set_enabled(response.data.enabled);
-      }
-      getSensorData();
-      getAutoStatus();
-    } catch (error) {
-      console.error('Login Error:', error);
-    }
-  }, []);
+    if (!isFocused) return;
+    const fetchAll = async () => {
+      try {
+        const [sensorRes, pumpRes] = await Promise.all([
+          sensorDataAPI(),
+          pumpStatusAPI(),
+        ]);
 
+        if (sensorRes?.data) {
+          setSensorData(sensorRes.data);
+        }
+
+        if (pumpRes?.data) {
+          setPumpStatus(pumpRes.data.state === "on");
+        }
+      } catch (error) {
+        console.error("Fetch realtime data error:", error);
+      }
+    };
+
+    fetchAll(); // gọi lần đầu
+
+    const interval = setInterval(fetchAll, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isFocused]);
 
   return (
     <View style={homeStyles.container}>
@@ -59,6 +73,10 @@ const Home = () => {
           <TouchableOpacity style={homeStyles.iconCircle} onPress={() => router.navigate('/setting/setting')}>
             <Ionicons name="settings-outline" size={24} color="black" />
           </TouchableOpacity>
+
+          <TouchableOpacity style={homeStyles.iconCircle} onPress={() => router.navigate('/notification/notification')}>
+            <Ionicons name="notifications-outline" size={24} color="black" />
+          </TouchableOpacity>
         </View>
 
         {/* Location */}
@@ -71,7 +89,7 @@ const Home = () => {
       {/* Weather Card */}
       <View style={homeStyles.weatherCard}>
         <View>
-          <Text style={homeStyles.tempText}>23°C</Text>
+          <Text style={homeStyles.tempText}>{sensorData?.temperature?.value ? `${sensorData.temperature.value}°C` : 'N/A'}</Text>
           <Text style={homeStyles.cityText}>Default location</Text>
         </View>
         <Image
@@ -122,20 +140,20 @@ const Home = () => {
                 onPress={async () => {
                   try {
                     // Call API to toggle auto status
-                    const response = await changeAutoStatus(!enabled);
+                    const response = await changePumpStatusAPI(pumpStatus === true ? 'pump_off' : 'pump_on');
                     if (response.data) {
-                      set_enabled(response.data.enabled);
-                      toastShow(`Pump turned ${response.data.enabled ? 'on' : 'off'}`, response.data.enabled ? '#04B20C' : '#e19833ff');
+                      setPumpStatus(!pumpStatus);
+                      toastShow(`Pump turned ${response.data.state === 'on' ? 'on' : 'off'}`, response.data.state === 'on' ? '#04B20C' : '#e19833ff');
                     }
                     else {
-                      toastShow('Failed to change auto mode', '#E13F33');
+                      toastShow('Failed to change pump status', '#E13F33');
                     }
                   } catch (error) {
-                    console.error("Error toggling auto status:", error);
+                    console.error("Error changing pump status:", error);
                   }
                 }}
               >
-                {enabled === true ? (
+                {pumpStatus === true ? (
                   <Fontisto name="toggle-on" size={38} color="#08d012ff" />
                 ) : (
                   <Fontisto name="toggle-off" size={38} color="#CC1800" />
