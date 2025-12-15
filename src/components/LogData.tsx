@@ -1,6 +1,5 @@
 import { COLORS } from "@/constants/colors";
 import { wateringHistoryAPI } from "@/utils/api";
-import { useUserTokenContext } from "@/utils/userToken.context";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native"
 
@@ -65,7 +64,6 @@ const LogData = (props: IProps) => {
         date?: string;
     };
     const [logData, setLogData] = useState<data[]>([]);
-    const { access_token } = useUserTokenContext();
 
     const formatTime = (date: Date) => {
         let hours = date.getHours();
@@ -113,16 +111,13 @@ const LogData = (props: IProps) => {
 
     useEffect(() => {
         try {
-            const fetchData = async (access_token: string) => {
-                // Replace with your actual access token retrieval method
-                const response = await wateringHistoryAPI(access_token);
+            const fetchData = async () => {
+                const response = await wateringHistoryAPI();
                 if (response.data) {
                     setLogData(response.data.map(parseWateringSession));
                 }
             };
-            if (access_token) {
-                fetchData(access_token);
-            }
+            fetchData();
         } catch (error) {
             console.error("Failed to get watering history data:", error);
         }

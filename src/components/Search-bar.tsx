@@ -3,7 +3,7 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { COLORS } from "@/constants/colors";
 
 const styles = StyleSheet.create({
-    container: {
+    containerSearch: {
         backgroundColor: 'white',
         flexDirection: 'row',
         gap: 3,
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 6,
     },
-    input: {
+    inputSearch: {
         flex: 1,
         fontSize: 16,
         color: COLORS.textColor,
@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
 })
 const SearchBar = () => {
     return (
-        <View style={styles.container}>
+        <View style={styles.containerSearch}>
             <EvilIcons name="search" size={30} color={COLORS.textColor} />
-            <TextInput style={styles.input} placeholder="Search devices" autoCapitalize="none" />
+            <TextInput style={styles.inputSearch} placeholder="Search" autoCapitalize="none" />
         </View>
     )
 }

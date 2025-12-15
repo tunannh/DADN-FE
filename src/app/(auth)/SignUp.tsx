@@ -54,19 +54,6 @@ const SignUp = () => {
     } finally {
       setLoading(false);
     }
-    // setTimeout(() => {
-    //   try {
-    //     console.log('Name', name);
-    //     console.log('Email', email);
-    //     console.log('Password', password);
-    //   } catch (err: any) {
-    //     Alert.alert('Error', err.errors?.[0]?.message || 'Sign Up failed');
-    //     console.error(JSON.stringify(err, null, 2));
-    //   } finally {
-    //     setLoading(false);
-    //     console.log('Sign Up Successful');
-    //   }
-    // }, 3000);
   };
 
   return (

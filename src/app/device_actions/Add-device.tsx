@@ -1,10 +1,8 @@
 import Input from "@/components/input";
 import { COLORS } from "@/constants/colors";
-import { useDeviceStore } from "@/store/device-store";
 import { createDeviceAPI } from "@/utils/api";
 import { useDevices } from "@/utils/devices.context";
-import { useUserTokenContext } from "@/utils/userToken.context";
-import { router, useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Dropdown } from "react-native-element-dropdown";
@@ -55,23 +53,22 @@ const styles = StyleSheet.create({
 })
 const AddDevice = () => {
     const { addDevice } = useDevices();
-    const { access_token } = useUserTokenContext();
-    const [deviceName, setDeviceName] = useState<"sensor" | "actuator" | "">("");
-    const [sensorType, setSensorType] = useState<"soil_moisture" | "temperature" | "humidity" | "">("");
-    const [actuatorType, setActuatorType] = useState<"pump" | "relay" | "lcd" | "">("");
+    const [deviceName, setDeviceName] = useState<string>("");
+    const [sensorType, setSensorType] = useState<"soil_moisture" | "temperature" | "humidity" | null>(null);
+    const [actuatorType, setActuatorType] = useState<"pump" | "relay" | "lcd" | null>(null);
     const [modal, setModal] = useState<string>("");
     const [feedKey, setFeedKey] = useState<string>("");
 
-    const [deviceType, setDeviceType] = useState<any>("");
-    const deviceTypes = [
-        { label: "Sensor", value: "sensor" },
-        { label: "Actuator", value: "actuator" },
-    ];
-    const sensorTypes = [
-        { label: "Soil moisture", value: "soil_moisture" },
-        { label: "Temperature", value: "temperature" },
-        { label: "Humidity", value: "humidity" },
-    ];
+    const [deviceType, setDeviceType] = useState<"sensor" | "actuator" | "">("")
+    // const deviceTypes = [
+    //     { label: "Sensor", value: "sensor" },
+    //     { label: "Actuator", value: "actuator" },
+    // ];
+    // const sensorTypes = [
+    //     { label: "Soil moisture", value: "soil_moisture" },
+    //     { label: "Temperature", value: "temperature" },
+    //     { label: "Humidity", value: "humidity" },
+    // ];
     const actuatorTypes = [
         { label: "Pump", value: "pump" },
         { label: "Relay", value: "relay" },
@@ -80,7 +77,7 @@ const AddDevice = () => {
 
     const toastShow = (message: string, color: string) => {
         Toast.show(message, {
-            duration: 2000,
+            duration: 2800,
             animation: true,
             backgroundColor: color,
             opacity: 1,
@@ -92,41 +89,31 @@ const AddDevice = () => {
             toastShow('Please enter device name', '#ECB90D');
             return;
         }
-        if (deviceType === "") {
-            toastShow('Please select device type', '#ECB90D');
-            return;
-        }
-        if (deviceType === "sensor" && sensorType === "") {
-            toastShow('Please select sensor type', '#ECB90D');
-            return;
-        }
-        if (deviceType === "actuator" && actuatorType === "") {
+        if (!actuatorType) {
             toastShow('Please select actuator type', '#ECB90D');
             return;
         }
         try {
-            const response = await createDeviceAPI(access_token, deviceName,
-                deviceType,
-                sensorType ? sensorType : null,
-                actuatorType ? actuatorType : null,
+            const response = await createDeviceAPI(
+                deviceName,
+                "actuator",
+                null,
+                actuatorType,
                 modal ? modal : null,
-                "inactive",
-                feedKey ? feedKey : null,
-                1);
+                feedKey ? feedKey : null);
 
             if (response.data) { // response.status === 200
                 addDevice(response.data);
                 toastShow('Add device successfully', '#04B20C');
                 setTimeout(() => {
                     router.back();
-                }, 1000);
+                }, 500);
             }
             else {
-                console.log('Add Device failed:', response);
-                toastShow('Add device failed', '#E13F33');
+                toastShow(`Add device failed${response.detail ? `: ${response.detail}` : ''}`, '#E13F33');
             }
         } catch (error) {
-            console.error('Registration Error:', error);
+            console.error('Add device Error:', error);
         }
     };
 
@@ -139,62 +126,21 @@ const AddDevice = () => {
                     value={deviceName}
                     setValue={setDeviceName}
                 />
-                <View style={styles.typewrapper}>
-                    <View style={styles.typeelem}>
-                        <Text style={styles.label}>Device Type</Text>
-                        <Dropdown
-                            style={styles.dropdown}
-                            placeholderStyle={{ color: COLORS.textColor, fontSize: 15 }}
-                            containerStyle={{ backgroundColor: COLORS.bgColor, borderRadius: 5 }}
-                            selectedTextStyle={{ fontSize: 15 }}
-                            activeColor={COLORS.border}
-                            data={deviceTypes}
-                            labelField="label"
-                            valueField="value"
-                            placeholder="Select device type"
-                            value={deviceType}
-                            onChange={(item) => setDeviceType(item.value)}
-                        />
-                    </View>
-                    {deviceType ? (
-                        deviceType === "sensor" ? (
-                            <View style={styles.typeelem}>
-                                <Text style={styles.label}>Sensor Type</Text>
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={{ color: COLORS.textColor, fontSize: 15 }}
-                                    containerStyle={{ backgroundColor: COLORS.bgColor, borderRadius: 5 }}
-                                    selectedTextStyle={{ fontSize: 15 }}
-                                    activeColor={COLORS.border}
-                                    data={sensorTypes}
-                                    labelField="label"
-                                    valueField="value"
-                                    placeholder="Select sensor type"
-                                    value={sensorType}
-                                    onChange={(item) => setSensorType(item.value)}
-                                />
-                            </View>
-                        ) : (
-                            <View style={styles.typeelem}>
-                                <Text style={styles.label}>Actuator Type</Text>
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={{ color: COLORS.textColor, fontSize: 15 }}
-                                    containerStyle={{ backgroundColor: COLORS.bgColor, borderRadius: 5 }}
-                                    selectedTextStyle={{ fontSize: 15 }}
-                                    activeColor={COLORS.border}
-                                    data={actuatorTypes}
-                                    labelField="label"
-                                    valueField="value"
-                                    placeholder="Select actuator type"
-                                    value={actuatorType}
-                                    onChange={(item) => setActuatorType(item.value)}
-                                />
-                            </View>
-                        )
-                    ) : (
-                        <View></View>
-                    )}
+                <View style={styles.typeelem}>
+                    <Text style={styles.label}>Actuator Type</Text>
+                    <Dropdown
+                        style={styles.dropdown}
+                        placeholderStyle={{ color: COLORS.textColor, fontSize: 15 }}
+                        containerStyle={{ backgroundColor: COLORS.bgColor, borderRadius: 5 }}
+                        selectedTextStyle={{ fontSize: 15 }}
+                        activeColor={COLORS.border}
+                        data={actuatorTypes}
+                        labelField="label"
+                        valueField="value"
+                        placeholder="Select actuator type"
+                        value={actuatorType}
+                        onChange={(item) => setActuatorType(item.value)}
+                    />
                 </View>
                 <Input
                     placeholder="Enter modal"

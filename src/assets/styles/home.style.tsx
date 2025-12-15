@@ -77,7 +77,7 @@ export const homeStyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     marginTop: 40,
   },
 
@@ -100,7 +100,6 @@ export const homeStyles = StyleSheet.create({
   infoValue: {
     fontSize: 20,
     fontWeight: '700',
-    marginTop: 10,
     color: COLORS.text,
   },
 

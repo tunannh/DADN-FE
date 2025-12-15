@@ -1,83 +1,52 @@
-// src/components/ThresholdCard.tsx
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, Platform, Switch } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { handleDecimalInput } from '@/utils/inputHelpers';
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { Fontisto, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAutoStatus } from '@/utils/useAutoStatus.context';
+import { changeAutoStatus } from '@/utils/api';
+import Toast from 'react-native-root-toast';
 
-interface ThresholdCardProps {
-  label: string;
-  icon: any;
-  color: string;
-  value: string;
-  unit: string;
-  setValue: (val: string) => void;
-  field: string;
-  focusedField: string | null;
-  setFocusedField: (val: string | null) => void;
-}
 
-export const ThresholdCard: React.FC<ThresholdCardProps> = ({
-  label,
-  icon,
-  color,
-  value,
-  unit,
-  setValue,
-  field,
-  focusedField,
-  setFocusedField,
-}) => {
-  const isFocused = focusedField === field;
-
-  return (
-    <View style={styles.card}>
-      {/* Bên trái */}
-      <View style={styles.cardLeft}>
-        <MaterialCommunityIcons name={icon} size={26} color={color} />
-        <Text style={styles.label}>{label}</Text>
-      </View>
-
-      {/* Bên phải */}
-      <View
-        style={[
-          styles.cardRight,
-          isFocused && { backgroundColor: '#eaf9ee', borderColor: '#2E9B4E' },
-        ]}
-      >
-        <TextInput
-          style={[styles.input, { minWidth: 40 + value.length * 8 }]}
-          keyboardType="decimal-pad"
-          value={value}
-          onChangeText={(t) => handleDecimalInput(t, setValue)}
-          onFocus={() => setFocusedField(field)}
-          onBlur={() => setFocusedField(null)}
-          placeholder="0"
-          placeholderTextColor="#A0A0A0"
-        />
-        <Text style={styles.unit}>{unit}</Text>
-      </View>
-    </View>
-  );
-};
-
-interface AutoModeCardProps {
-  autoMode: boolean;
-  setAutoMode: (val: boolean) => void;
-}
-
-export const AutoModeCard: React.FC<AutoModeCardProps> = ({ autoMode, setAutoMode }) => {
+export const AutoModeCard = () => {
+  const toastShow = (message: string, color: string) => {
+    Toast.show(message, {
+      duration: 2000,
+      animation: true,
+      backgroundColor: color,
+      opacity: 1,
+      position: -82
+    })
+  }
+  const { enabled, set_enabled } = useAutoStatus();
   return (
     <View style={styles.card}>
       <View style={styles.cardLeft}>
         <MaterialCommunityIcons name="faucet-variant" size={26} color="#FF4D4D" />
         <Text style={styles.label}>AutoMode</Text>
       </View>
-      <Switch
-        value={autoMode}
-        onValueChange={setAutoMode}
-        trackColor={{ false: '#ccc', true: '#FF4D4D' }}
-        thumbColor="#fff"
-      />
+      <TouchableOpacity
+        style={{ marginRight: 12 }}
+        onPress={async () => {
+          try {
+            // Call API to toggle auto status
+            const response = await changeAutoStatus(!enabled);
+            if (response.data) {
+              set_enabled(response.data.enabled);
+              toastShow(`Auto mode ${response.data.enabled ? 'on' : 'off'}`, response.data.enabled ? '#04B20C' : '#e19833ff');
+            }
+            else {
+              toastShow('Failed to change auto mode', '#E13F33');
+            }
+          } catch (error) {
+            console.error("Error toggling auto status:", error);
+          }
+        }}
+      >
+        {enabled === true ? (
+          <Fontisto name="toggle-on" size={38} color="#08d012ff" />
+        ) : (
+          <Fontisto name="toggle-off" size={38} color="#CC1800" />
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -89,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 14,
     paddingHorizontal: 18,
-    marginBottom: 16,
+    marginBottom: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

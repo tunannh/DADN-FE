@@ -1,6 +1,6 @@
 import { COLORS } from '@/constants/colors';
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 
 const TabsLayout = () => {
@@ -21,8 +21,8 @@ const TabsLayout = () => {
       return <Ionicons name={focused ? 'bar-chart' : 'bar-chart-outline'} size={size} color={focused ? COLORS.buttonBackground : "#707B81"} />;
     }
   }
-
   return (
+
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,

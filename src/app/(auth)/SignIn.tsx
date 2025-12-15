@@ -1,15 +1,13 @@
 import { COLORS } from '@/constants/colors';
 import { authStyles } from '@/assets/styles/auth.style';
-// import { useAuth } from '@/src/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import Toast from "react-native-root-toast";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  ActivityIndicator,
-  Alert,
+  // ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -21,19 +19,18 @@ import {
 import { loginAPI } from '@/utils/api';
 import { Formik } from 'formik';
 import { SignInSchema } from '@/utils/validate.schema';
-import { useUserTokenContext } from '@/utils/userToken.context';
 
 const SignInScreen = () => {
   const router = useRouter();
-  const { set_access_token, set_token_type } = useUserTokenContext();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState('');
+  const [isFocusEmail, setIsFocusEmail] = useState<boolean>(false);
+  const [isFocusPassword, setIsFocusPassword] = useState<boolean>(false);
 
   const toastShow = (message: string, color: string) => {
     Toast.show(message, {
-      duration: 2000,
+      duration: 2500,
       animation: true,
       backgroundColor: color,
       opacity: 1,
@@ -46,16 +43,19 @@ const SignInScreen = () => {
       const response = await loginAPI(email, password);
       if (response.data) { // response.status === 200
         toastShow('Signed in successfully', '#04B20C');
-
-        set_access_token(response.data.access_token);
-        set_token_type(response.data.token_type);
+        await AsyncStorage.setItem('access_token', response.data.access_token);
+        // set_access_token(response.data.access_token);
 
         setTimeout(() => {
-          router.replace('/(tabs)/Home');
-        }, 300);
+          if (response.data.role === 'admin')
+            router.replace("/(admin)/ManageUser");
+          // router.replace('/(tabs)/Home');
+          else
+            router.replace('/(tabs)/Home');
+        }, 200);
       }
       else { // email or password incorrect
-        toastShow('Sign In failed! Email or password is incorrect.', '#E13F33');
+        toastShow('Sign in failed! Email or password is incorrect.', '#E13F33');
       }
     } catch (error) {
       console.error('Login Error:', error);
@@ -99,14 +99,15 @@ const SignInScreen = () => {
                   <Text style={authStyles.labelInput}>Email</Text>
 
                   <TextInput
-                    style={authStyles.textInput}
+                    style={[authStyles.textInput, { borderColor: isFocusEmail ? COLORS.primary : COLORS.borderColor }]}
                     placeholder="Enter email"
                     // value={email}
                     keyboardType="email-address"
                     autoCapitalize="none"
 
                     onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
+                    onFocus={() => setIsFocusEmail(true)}
+                    onBlur={() => { handleBlur('email'); setIsFocusEmail(false) }}
                     value={values.email}
                   />
                   {errors.email && (
@@ -120,12 +121,13 @@ const SignInScreen = () => {
                 <View style={authStyles.inputContainer}>
                   <Text style={authStyles.labelInput}>Password</Text>
                   <TextInput
-                    style={authStyles.textInput}
+                    style={[authStyles.textInput, { borderColor: isFocusPassword ? COLORS.primary : COLORS.borderColor }]}
                     placeholder="Enter password"
                     // value={password}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
-
+                    onFocus={() => setIsFocusPassword(true)}
+                    onBlur={() => { handleBlur('password'); setIsFocusPassword(false) }}
                     onChangeText={handleChange('password')}
                     value={values.password}
                   />
@@ -164,7 +166,7 @@ const SignInScreen = () => {
                 </TouchableOpacity>
 
                 {/* Sign Up Link */}
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={authStyles.linkContainer}
                   onPress={() => router.push('SignUp' as never)}
                 >
@@ -172,7 +174,7 @@ const SignInScreen = () => {
                     Don&apos;t have an account?{' '}
                     <Text style={authStyles.link}>Sign up</Text>
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
               </View>
             )}

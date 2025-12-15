@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: COLORS.titleColor,
     fontWeight: 'bold',
+    marginTop: 20
   },
   menu: {
     backgroundColor: 'white',
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   menuItem: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     width: '50%',
     borderRadius: 12,
   },

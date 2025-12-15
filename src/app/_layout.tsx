@@ -1,13 +1,14 @@
 import { COLORS } from "@/constants/colors";
 import DeviceProvider from "@/utils/devices.context";
-import UserTokenProvider from "@/utils/userToken.context";
+import AutoStatusProvider from "@/utils/useAutoStatus.context";
 import { Stack } from "expo-router";
 import { RootSiblingParent } from "react-native-root-siblings";
 
+
 const RootLayout = () => {
   return (
-    <RootSiblingParent>
-      <UserTokenProvider>
+    <AutoStatusProvider>
+      <RootSiblingParent>
         <DeviceProvider>
           <Stack
             screenOptions={{
@@ -22,7 +23,7 @@ const RootLayout = () => {
             <Stack.Screen
               name="index"
               options={{
-                headerTitle: "Welcome Page",
+                headerTitle: "Root Page",
                 headerShown: false,
               }}
             />
@@ -36,6 +37,13 @@ const RootLayout = () => {
               name="(tabs)"
               options={{
                 headerTitle: "Trang chủ",
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="(admin)"
+              options={{
+                headerTitle: "Admin Panel",
                 headerShown: false
               }}
             />
@@ -57,16 +65,10 @@ const RootLayout = () => {
                 headerTitle: "Setting",
               }}
             />
-            <Stack.Screen
-              name="manage_user/ManageUser"
-              options={{
-                headerTitle: "Manage User",
-              }}
-            />
           </Stack>
         </DeviceProvider>
-      </UserTokenProvider>
-    </RootSiblingParent>
+      </RootSiblingParent>
+    </AutoStatusProvider>
   );
 
 }

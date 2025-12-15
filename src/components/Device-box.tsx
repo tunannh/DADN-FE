@@ -4,11 +4,9 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { COLORS } from "@/constants/colors";
 import React, { ReactNode, useState } from "react";
 import { router } from "expo-router";
-import { useUserTokenContext } from "@/utils/userToken.context";
 import { deleteDeviceAPI } from "@/utils/api";
 import { useDevices } from "@/utils/devices.context";
 import Toast from "react-native-root-toast";
-import Fontisto from '@expo/vector-icons/Fontisto';
 
 const styles = StyleSheet.create({
     container: {
@@ -45,11 +43,19 @@ const styles = StyleSheet.create({
         color: COLORS.titleColor
     },
     status: {
-        borderRadius: 50,
-        width: 38,
-        height: 38,
-        justifyContent: "center",
-        alignItems: "center"
+        borderRadius: 8,
+        width: 70,
+        paddingVertical: 4,
+        alignItems: "center",
+        shadowColor: "gray",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.9,
+        shadowRadius: 6,
+        borderColor: '#CCCCCC',
+        borderWidth: 1,
+
+        // Android
+        elevation: 6,
     },
     actions: {
         gap: 9,
@@ -58,35 +64,40 @@ const styles = StyleSheet.create({
 
 interface IProps {
     deviceName: string;
-    deviceId: string;
+    deviceId: number;
     status: string;
+    device_type: string;
+    model: string | null;
+    feed_key: string | null;
     icon?: ReactNode,
-    // toggle?: (value: boolean) => void;
 }
 
 const DeviceBox = (props: IProps) => {
-    const { access_token } = useUserTokenContext();
     const { removeDevice } = useDevices();
 
     const [modalVisible, setModalVisible] = useState(false);
-    const { deviceName, deviceId, status, icon } = props;
-    const displayStatus: string = status ? "On" : "Off"
+    const { deviceName, deviceId, status, icon, device_type, model, feed_key } = props;
 
     const toastShow = (message: string, color: string) => {
         Toast.show(message, {
-            duration: 2000,
+            duration: 2500,
             animation: true,
             backgroundColor: color,
             opacity: 1,
             position: -100,
         })
     }
-    const handelDeleteDevice = async (access_token: string, device_id: string) => {
+    const handelDeleteDevice = async (device_id: number) => {
+        if (!device_id) return;
+        if (device_id <= 4) {
+            toastShow('Can not delete system default devices', '#E13F33');
+            return;
+        }
         try {
-            const response = await deleteDeviceAPI(access_token, parseInt(device_id));
-            if (response.status === 204) {
+            const response = await deleteDeviceAPI(device_id.toString());
+            if (response.data) {
                 toastShow('Delete device successfully', '#04B20C');
-                removeDevice(parseInt(device_id));
+                removeDevice(device_id);
             }
             else {
                 toastShow('Delete device failed', '#E13F33');
@@ -95,6 +106,7 @@ const DeviceBox = (props: IProps) => {
             console.log("Error deleting device:", error);
         }
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.infor}>
@@ -103,25 +115,37 @@ const DeviceBox = (props: IProps) => {
                 </View>
                 <View style={styles.device_name}>
                     <Text style={styles.label}>{deviceName}</Text>
-                    <TouchableOpacity>
-                        {/* style={[styles.status, { backgroundColor: status === "inactive" ? '#CC1800' : '#13E633' }]} */}
-                        {/* <Text style={{ color: 'white', fontSize: 16 }}>{status === "active" ? "On" : "Off"}</Text> */}
-                        {status === "active" ? (
-                            <Fontisto name="toggle-on" size={45} color="#08d012ff" />
-                        ) : (
-                            <Fontisto name="toggle-off" size={45} color="#CC1800" />
-                        )}
-                    </TouchableOpacity>
+                    {/* <TouchableOpacity onPress={handeleChangeStatus}>
+                            {status === "active" ? (
+                                <Fontisto name="toggle-on" size={45} color="#08d012ff" />
+                            ) : (
+                                <Fontisto name="toggle-off" size={45} color="#CC1800" />
+                            )}
+                        </TouchableOpacity> */}
+                    <View style={[styles.status, { backgroundColor: status === "inactive" ? '#13E633' : '#CC1800' }]}>
+                        <Text style={{ color: 'white', fontSize: 16 }}>{status}</Text>
+                    </View>
+
                 </View>
             </View>
 
             <View style={styles.actions}>
                 <View>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <MaterialIcons name="delete-outline" size={22} color={COLORS.titleColor} />
+                        <MaterialIcons name="delete-outline" size={24} color={COLORS.titleColor} />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => { router.navigate("/device_actions/Device-infor") }}>
+                <TouchableOpacity onPress={() => {
+                    router.navigate({
+                        pathname: '/device_actions/Device-infor',
+                        params: {
+                            device_name: deviceName,
+                            device_type: device_type,
+                            model: model,
+                            feed_key: feed_key,
+                        }
+                    })
+                }}>
                     <Entypo name="chevron-thin-right" size={24} color={COLORS.titleColor} />
                 </TouchableOpacity>
             </View>
@@ -150,7 +174,7 @@ const DeviceBox = (props: IProps) => {
 
                             <TouchableOpacity
                                 style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#E32928', borderRadius: 5, opacity: 0.89 }}
-                                onPress={() => { setModalVisible(false); handelDeleteDevice(access_token, deviceId); }}>
+                                onPress={() => { setModalVisible(false); handelDeleteDevice(deviceId); }}>
                                 <Text style={{ color: "white" }}>Delete</Text>
                             </TouchableOpacity>
                         </View>

@@ -4,7 +4,7 @@ import axios from "@/utils/axios.customize";
 // Authentication APIs
 // ***************************************************************************
 export const registerAPI = (name: string, email: string, password: string) => {
-    const url = "/auth/register";
+    const url = "/register";
     return axios.post(url, {
         name,
         email,
@@ -14,7 +14,7 @@ export const registerAPI = (name: string, email: string, password: string) => {
 }
 
 export const loginAPI = (email: string, password: string) => {
-    const url = "/auth/login";
+    const url = "/login";
     return axios.post(url, {
         username: email,
         password,
@@ -29,15 +29,15 @@ export const loginAPI = (email: string, password: string) => {
 // ****************************************************************************
 // Device APIs
 // ***************************************************************************
-export const createDeviceAPI = (access_token: string, name: string, device_type: "sensor" | "actuator",
+export const createDeviceAPI = (
+    name: string,
+    device_type: "sensor" | "actuator",
     sensor_type: "soil_moisture" | "temperature" | "humidity" | null,
     actuator_type: "pump" | "relay" | "lcd" | null,
     model: string | null,
-    status: "active" | "inactive" | "error",
-    feed_key: string | null,
-    garden_id: number) => {
-
-    const url = "/devices";
+    feed_key: string | null
+) => {
+    const url = "/devices/create";
 
     return axios.post(url, {
         name,
@@ -45,35 +45,80 @@ export const createDeviceAPI = (access_token: string, name: string, device_type:
         sensor_type,
         actuator_type,
         model,
-        status,
         feed_key,
-        garden_id,
-    }, {
-        headers: {
-            'Authorization': `bearer ${access_token}`,
-        },
     });
 }
 
-export const deleteDeviceAPI = (access_token: string, device_id: number) => {
+export const listDevicesAPI = () => {
+    const url = "/devices";
+    return axios.get(url);
+}
+
+export const deleteDeviceAPI = (device_id: string) => {
     const url = `/devices/${device_id}`;
-    return axios.delete(url, {
-        headers: {
-            'Authorization': `bearer ${access_token}`,
-        },
-    });
+    return axios.delete(url);
+}
+
+export const autoStatus = () => {
+    const url = "/automation/status";
+    return axios.get(url);
+}
+
+export const changeAutoStatus = (enabled: boolean) => {
+    const url = "/automation";
+    return axios.put(url, { enabled });
 }
 
 
 // ****************************************************************************
 // Watering History APIs
 // ***************************************************************************
-export const wateringHistoryAPI = (access_token: string) => {
+export const wateringHistoryAPI = () => {
     const url = "/dashboard/gardens/irrigation-sessions";
-    return axios.get(url, {
-        headers: {
-            'Authorization': `bearer ${access_token}`,
-        },
+    return axios.get(url);
+}
+
+// ****************************************************************************
+// Sensor Data APIs
+// ***************************************************************************
+export const sensorDataAPI = () => {
+    const url = "/monitoring";
+    return axios.get(url);
+}
+
+// ****************************************************************************
+// get list threshold APIs
+// ***************************************************************************
+export const getThresholdAPI = () => {
+    const url = "/thresholds";
+    return axios.get(url);
+}
+
+// ****************************************************************************
+// set threshold APIs
+// ***************************************************************************
+export const setThresholdAPI = (id: string, min_value: number, max_value: number) => {
+    const url = `/thresholds/update/${id}`;
+    return axios.put(url, {
+        min_value,
+        max_value,
     });
 }
 
+// ****************************************************************************
+// users APIs
+// ***************************************************************************
+export const getUsersAPI = () => {
+    const url = "/users";
+    return axios.get(url);
+}
+
+export const deleteUserAPI = (user_id: string) => {
+    const url = `/users/${user_id}`;
+    return axios.delete(url);
+}
+
+export const getProfileAPI = () => {
+    const url = "/users/me";
+    return axios.get(url);
+}

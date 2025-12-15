@@ -1,12 +1,11 @@
-interface IDeviceType {
-    id: string;
-    deviceName: string;
-    isActive: boolean;
-};
-
-interface DeviceStore {
-    listDevices: IDeviceType[];
-    addDevice: (newDeviceName: string) => void;
-    deleteDevice: (id: string) => void;
-    changeStatus: (id: string) => void;
+interface DeviceType {
+    device_id: number;
+    name: string;
+    device_type: "sensor" | "actuator";
+    sensor_type?: "soil_moisture" | "temperature" | "humidity" | null;
+    actuator_type?: "pump" | "relay" | "lcd" | null;
+    model: string | null;
+    status: "active" | "inactive" | "error";
+    feed_key: string | null;
+    garden_id: number;
 }

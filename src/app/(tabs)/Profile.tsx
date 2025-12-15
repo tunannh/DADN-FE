@@ -1,9 +1,8 @@
 import { COLORS } from '@/constants/colors';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -16,16 +15,14 @@ import {
   View,
 } from 'react-native';
 import SafeScreen from '@/components/SafeScreen';
+import { getProfileAPI } from '@/utils/api';
 
 const Profile = () => {
-  const navigation = useNavigation();
 
-  // 🧩 useState cho thông tin người dùng
   const [name, setName] = useState('Albert Furo');
   const [email, setEmail] = useState('Sample@gmail.com');
   const [phone, setPhone] = useState('0383 462 324');
 
-  // 🧩 Trạng thái cho chế độ chỉnh sửa
   const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = () => {
@@ -34,9 +31,9 @@ const Profile = () => {
     // Có thể gọi API lưu thông tin tại đây
   };
 
-  const [avatar, setAvatar] = useState<string | null>(
-    require('@/assets/images/avatar.png') as any
-  );
+  // const [avatar, setAvatar] = useState<string | null>(
+  //   require('@/assets/images/avatar.png') as any
+  // );
 
   const handlePickAvatar = async () => {
     // Xin quyền truy cập ảnh
@@ -60,11 +57,23 @@ const Profile = () => {
     });
 
 
-    if (!result.canceled) {
-      setAvatar(result.assets[0].uri);
-    }
+    // if (!result.canceled) {
+    //   setAvatar(result.assets[0].uri);
+    // }
   };
 
+  const [profile, setProfile] = useState<object>({});
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfileAPI();
+        setProfile(response.data);
+      } catch (error) {
+        console.log('Error fetching profile:', error);
+      }
+    }
+    fetchProfile();
+  }, []);
   return (
     <SafeScreen style={profileStyles.container}>
       <KeyboardAvoidingView
@@ -78,35 +87,34 @@ const Profile = () => {
         >
           {/* Header */}
           <View style={profileStyles.header}>
-            {/* <TouchableOpacity style={profileStyles.backButton} onPress={() => navigation.goBack()}>
-              <Ionicons name="chevron-back" size={24} color="#000" />
-            </TouchableOpacity> */}
             <Text style={profileStyles.title}>Profile</Text>
 
-            <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
+            {/* <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
               <Ionicons
                 name={isEditing ? 'close' : 'create-outline'}
                 size={26}
                 color={COLORS.primary || '#215C2A'}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* Avatar */}
           <View style={profileStyles.avatarContainer}>
-            <TouchableOpacity
-              onPress={isEditing ? handlePickAvatar : undefined}
-            >
-              <Image
-                source={typeof avatar === 'string' ? { uri: avatar } : avatar}
-                style={profileStyles.avatar}
-              />
-              {isEditing && (
-                <View style={profileStyles.cameraIcon}>
-                  <Ionicons name="create-outline" size={22} color="#fff" />
-                </View>
-              )}
-            </TouchableOpacity>
+            {/* <TouchableOpacity
+                                      onPress={isEditing ? handlePickAvatar : undefined}
+                                  > */}
+            <Image
+              source={require('@/assets/images/avatar-user.png')}
+              // style={{ width: 100, height: 100 }}
+              style={profileStyles.avatar}
+            // resizeMode="cover"
+            />
+            {isEditing && (
+              <View style={profileStyles.cameraIcon}>
+                <Ionicons name="create-outline" size={22} color="#fff" />
+              </View>
+            )}
+            {/* </TouchableOpacity> */}
           </View>
 
           {/* Form */}
@@ -114,28 +122,27 @@ const Profile = () => {
             <Text style={profileStyles.label}>Name</Text>
             <TextInput
               style={profileStyles.input}
-              value={name}
-              onChangeText={setName}
-              editable={isEditing}
+              value={(profile as any)?.name || 'N/A'}
+              // onChangeText={setName}
+              editable={false}
             />
 
             <Text style={profileStyles.label}>Email</Text>
             <TextInput
               style={profileStyles.input}
-              value={email}
-              onChangeText={setEmail}
-              editable={isEditing}
+              value={(profile as any)?.email || 'N/A'}
+              // onChangeText={setEmail}
+              editable={false}
               keyboardType="email-address"
               autoCapitalize="none"
             />
 
-            <Text style={profileStyles.label}>Phone Number</Text>
+            <Text style={profileStyles.label}>role</Text>
             <TextInput
               style={profileStyles.input}
-              value={phone}
-              onChangeText={setPhone}
-              editable={isEditing}
-              keyboardType="phone-pad"
+              value={(profile as any)?.role || 'N/A'}
+              // onChangeText={setPhone}
+              editable={false}
             />
 
             {isEditing && (
@@ -187,13 +194,13 @@ const profileStyles = StyleSheet.create({
   },
   avatarContainer: {
     alignItems: 'center',
-    marginVertical: 24,
+    marginVertical: 30,
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    borderWidth: 2,
     borderColor: '#215C2A',
   },
   cameraIcon: {
@@ -216,12 +223,14 @@ const profileStyles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
     color: '#333',
     marginBottom: 18,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
   saveButton: {
     backgroundColor: '#215C2A',
