@@ -45,8 +45,11 @@ type LogEvent = {
     action: string;
     created_at: string;
 };
-
-const EnvData = () => {
+interface IProps {
+    startfilter?: Date;
+    endfilter?: Date;
+}
+const EnvData = ({ startfilter, endfilter }: IProps) => {
     const [logs, setLogs] = useState<LogEvent[]>([]);
 
     const formatDateTime = (isoString: string) => {
@@ -60,10 +63,23 @@ const EnvData = () => {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
+    const getEndOfDay = (date: Date) => {
+        const end = new Date(date);
+        end.setHours(23, 59, 59, 999);
+        return end;
+    };
     useEffect(() => {
         const fetchLogs = async () => {
             try {
-                const response = await getLogsAPI({ limit: 50 });
+                let params: any = {};
+                if (startfilter && endfilter) {
+                    params = {
+                        start_time: startfilter.toISOString(),
+                        end_time: getEndOfDay(endfilter).toISOString(),
+                        limit: 50
+                    };
+                }
+                const response = await getLogsAPI(params);
                 if (response.data) {
                     setLogs(response.data);
                 }
@@ -71,7 +87,7 @@ const EnvData = () => {
                 console.error("Failed to get logs:", error);
             }
         };
-        
+
         // Fetch immediately
         fetchLogs();
 
@@ -82,7 +98,7 @@ const EnvData = () => {
 
         // Cleanup interval on unmount
         return () => clearInterval(interval);
-    }, []);
+    }, [startfilter, endfilter]);
 
     return (
         <View style={styles.container}>

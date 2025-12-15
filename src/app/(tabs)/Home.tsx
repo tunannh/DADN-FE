@@ -49,18 +49,18 @@ const Home = () => {
       setSensorData(sensorResponse.data);
       set_enabled(statusResponse.data.enabled);
       setPumpState(pumpResponse.data.state);
-      
+
       console.log('=== NOTIFICATION DEBUG ===');
       console.log('Raw notifications:', notifResponse.data);
       console.log('Notifications count:', notifResponse.data?.length || 0);
-      
+
       if (notifResponse.data && notifResponse.data.length > 0) {
         console.log('First 3 notifications:');
         notifResponse.data.slice(0, 3).forEach((n: any, i: number) => {
           console.log(`  [${i}] event_id=${n.event_id}, message="${n.message}"`);
         });
       }
-      
+
       // Filter out test notifications completely
       const realNotifications = (notifResponse.data || []).filter(
         (notif: any) => !notif.message.includes('Test notification')
@@ -71,7 +71,7 @@ const Home = () => {
         const ts = new Date(notif.timestamp).getTime();
         return Date.now() - ts <= 10_000; // 10 seconds
       });
-      
+
       console.log('Real notifications after filter:', realNotifications);
       console.log('Real notifications count:', realNotifications.length);
       console.log('Recent notifications (<=60s) count:', recentNotifications.length);
@@ -82,29 +82,29 @@ const Home = () => {
       const hasHumidityAlert = recentNotifications.some((n: any) => n.message.includes('humidity'));
       setTempAlert(hasTempAlert);
       setHumidityAlert(hasHumidityAlert);
-      
+
       // Show alert for new real sensor notifications only (recent ones)
       if (recentNotifications.length > 0) {
         const latestNotif = recentNotifications[0];
         console.log('Latest notification:', latestNotif);
         console.log('Latest notification event_id:', latestNotif.event_id);
         console.log('Should show alert?', lastShownNotificationId !== latestNotif.event_id);
-        
+
         // Only show if this is a new notification we haven't shown yet
         if (lastShownNotificationId !== latestNotif.event_id) {
           console.log('SHOWING ALERT for notification:', latestNotif.message);
           setLastShownNotificationId(latestNotif.event_id);
-          
+
           // Parse the message to make it more user-friendly
           let alertTitle = '⚠️ Sensor Alert';
           let alertMessage = latestNotif.message;
-          
+
           if (alertMessage.includes('temperature')) {
             alertTitle = '🌡️ Temperature Alert';
           } else if (alertMessage.includes('humidity')) {
             alertTitle = '💧 Humidity Alert';
           }
-          
+
           Alert.alert(
             alertTitle,
             alertMessage,
@@ -118,7 +118,7 @@ const Home = () => {
         console.log('NO NOTIFICATIONS to show alert for');
       }
       console.log('=== END NOTIFICATION DEBUG ===');
-      
+
       // Only set recent real notifications (filter out test and old ones)
       setNotifications(recentNotifications);
     } catch (error) {
@@ -149,7 +149,7 @@ const Home = () => {
     // Set up interval to refresh every 1 second (faster notifications)
     const interval = setInterval(() => {
       fetchSensorData();
-    }, 1000);
+    }, 5000);
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
@@ -279,7 +279,7 @@ const Home = () => {
               >
                 <Text style={{ color: 'white', fontWeight: '600' }}>ON</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 onPress={() => handlePumpControl("pump_off")}
                 style={{
