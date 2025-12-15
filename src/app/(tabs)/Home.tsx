@@ -180,7 +180,7 @@ const Home = () => {
       {/* Weather Card */}
       <View style={homeStyles.weatherCard}>
         <View>
-          <Text style={homeStyles.tempText}>23°C</Text>
+          <Text style={homeStyles.tempText}>{sensorData?.temperature?.value ? `${sensorData.temperature.value}°C` : 'N/A'}</Text>
           <Text style={homeStyles.cityText}>Default location</Text>
         </View>
         <Image
