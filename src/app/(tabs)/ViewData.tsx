@@ -96,7 +96,7 @@ const ViewData = () => {
   return (
     <SafeAreaView style={{ backgroundColor: COLORS.bgColor, flex: 1 }}>
       <View style={styles.container}>
-        <View><Text style={styles.title}>Data</Text></View>
+        <View><Text style={styles.title}>Data history</Text></View>
         <View style={styles.menu}>
           <TouchableOpacity
             style={[
@@ -106,7 +106,7 @@ const ViewData = () => {
             onPress={() => setActive('log')}
           >
             <Text style={{ color: active === 'log' ? 'white' : 'black', textAlign: 'center' }}>
-              Watering History
+              Irrigation
             </Text>
           </TouchableOpacity>
 
@@ -118,7 +118,7 @@ const ViewData = () => {
             onPress={() => setActive('env')}
           >
             <Text style={{ color: active === 'env' ? 'white' : 'black', textAlign: 'center' }}>
-              Environment
+              Log
             </Text>
           </TouchableOpacity>
         </View>
@@ -149,7 +149,10 @@ const ViewData = () => {
           </View>
         ) : (
           <View style={styles.data}>
-            <EnvData />
+            <EnvData
+              startfilter={(startDate && endDate) ? startDate : undefined}
+              endfilter={(startDate && endDate) ? endDate : undefined}
+            />
           </View>
         )}
       </ScrollView>

@@ -130,7 +130,7 @@ const ProfileAdmin = () => {
                         <Text style={profileStyles.label}>Name</Text>
                         <TextInput
                             style={profileStyles.input}
-                            value={(profile as any).name || 'N/A'}
+                            value={(profile as any)?.name || 'N/A'}
                             // onChangeText={setName}
                             editable={false}
                         />
@@ -138,7 +138,7 @@ const ProfileAdmin = () => {
                         <Text style={profileStyles.label}>Email</Text>
                         <TextInput
                             style={profileStyles.input}
-                            value={(profile as any).email || 'N/A'}
+                            value={(profile as any)?.email || 'N/A'}
                             // onChangeText={setEmail}
                             editable={false}
                             keyboardType="email-address"
@@ -148,7 +148,7 @@ const ProfileAdmin = () => {
                         <Text style={profileStyles.label}>role</Text>
                         <TextInput
                             style={profileStyles.input}
-                            value={(profile as any).role || 'N/A'}
+                            value={(profile as any)?.role || 'N/A'}
                             // onChangeText={setPhone}
                             editable={false}
                         />
