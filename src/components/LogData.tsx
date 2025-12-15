@@ -110,17 +110,27 @@ const LogData = (props: IProps) => {
     };
 
     useEffect(() => {
-        try {
-            const fetchData = async () => {
+        const fetchData = async () => {
+            try {
                 const response = await wateringHistoryAPI();
                 if (response.data) {
                     setLogData(response.data.map(parseWateringSession));
                 }
-            };
+            } catch (error) {
+                console.error("Failed to get watering history data:", error);
+            }
+        };
+        
+        // Fetch immediately
+        fetchData();
+
+        // Set up interval to refresh every 10 seconds
+        const interval = setInterval(() => {
             fetchData();
-        } catch (error) {
-            console.error("Failed to get watering history data:", error);
-        }
+        }, 10000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(interval);
     }, []);
 
     const normalizeDate = (date: Date) => {

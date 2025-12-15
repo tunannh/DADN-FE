@@ -4,10 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
-import Toast from "react-native-root-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   // ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -28,34 +28,22 @@ const SignInScreen = () => {
   const [isFocusEmail, setIsFocusEmail] = useState<boolean>(false);
   const [isFocusPassword, setIsFocusPassword] = useState<boolean>(false);
 
-  const toastShow = (message: string, color: string) => {
-    Toast.show(message, {
-      duration: 2500,
-      animation: true,
-      backgroundColor: color,
-      opacity: 1,
-      position: -60,
-    })
-  }
   const handleSignIn = async (email: string, password: string) => {
     try {
       setLoading(true);
       const response = await loginAPI(email, password);
       if (response.data) { // response.status === 200
-        toastShow('Signed in successfully', '#04B20C');
         await AsyncStorage.setItem('access_token', response.data.access_token);
         // set_access_token(response.data.access_token);
 
-        setTimeout(() => {
-          if (response.data.role === 'admin')
-            router.replace("/(admin)/ManageUser");
-          // router.replace('/(tabs)/Home');
-          else
-            router.replace('/(tabs)/Home');
-        }, 200);
+        if (response.data.role === 'admin') {
+          router.replace('/(admin)/ManageUser');
+        } else {
+          router.replace('/(tabs)/Home');
+        }
       }
       else { // email or password incorrect
-        toastShow('Sign in failed! Email or password is incorrect.', '#E13F33');
+        Alert.alert('Sign in failed', 'Email or password is incorrect.');
       }
     } catch (error) {
       console.error('Login Error:', error);

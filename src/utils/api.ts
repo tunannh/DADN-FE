@@ -15,10 +15,10 @@ export const registerAPI = (name: string, email: string, password: string) => {
 
 export const loginAPI = (email: string, password: string) => {
     const url = "/login";
-    return axios.post(url, {
-        username: email,
-        password,
-    }, {
+    const form = new URLSearchParams();
+    form.append("username", email);
+    form.append("password", password);
+    return axios.post(url, form.toString(), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -69,12 +69,22 @@ export const changeAutoStatus = (enabled: boolean) => {
     return axios.put(url, { enabled });
 }
 
+export const controlPumpAPI = (action: "pump_on" | "pump_off") => {
+    const url = "/devices/pump/control";
+    return axios.post(url, { action });
+}
+
+export const getPumpStateAPI = () => {
+    const url = "/devices/pump/state";
+    return axios.get(url);
+}
+
 
 // ****************************************************************************
 // Watering History APIs
 // ***************************************************************************
 export const wateringHistoryAPI = () => {
-    const url = "/dashboard/gardens/irrigation-sessions";
+    const url = "/irrigation-sessions";
     return axios.get(url);
 }
 
@@ -121,4 +131,37 @@ export const deleteUserAPI = (user_id: string) => {
 export const getProfileAPI = () => {
     const url = "/users/me";
     return axios.get(url);
+}
+
+// ****************************************************************************
+// Logs APIs
+// ***************************************************************************
+export const getLogsAPI = (params?: {
+    action?: string;
+    event_type?: string;
+    start_time?: string;
+    end_time?: string;
+    limit?: number;
+    offset?: number;
+}) => {
+    const url = "/logs";
+    return axios.get(url, { params });
+}
+
+// ****************************************************************************
+// Notifications APIs
+// ***************************************************************************
+export const getNotificationsAPI = (limit: number = 10, offset: number = 0) => {
+    const url = "/notifications";
+    return axios.get(url, { params: { limit, offset } });
+}
+
+export const createTestNotificationAPI = () => {
+    const url = "/notifications/test";
+    return axios.post(url);
+}
+
+export const cleanupTestNotificationsAPI = () => {
+    const url = "/notifications/cleanup-test";
+    return axios.delete(url);
 }

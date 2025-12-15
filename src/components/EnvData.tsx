@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/colors";
-import { useState } from "react";
+import { getLogsAPI } from "@/utils/api";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native"
 
 const styles = StyleSheet.create({
@@ -7,7 +8,6 @@ const styles = StyleSheet.create({
         gap: 15,
     },
     dataEnv: {
-        // gap: 5,
         backgroundColor: 'white',
         borderRadius: 15,
         shadowColor: COLORS.titleColor,
@@ -37,71 +37,78 @@ const styles = StyleSheet.create({
     }
 })
 
+type LogEvent = {
+    log_id: number;
+    event_id: number;
+    name: string;
+    description: string;
+    action: string;
+    created_at: string;
+};
+
 const EnvData = () => {
-    const [envData, setEnvData] = useState<{
-        id: number;
-        soilMoisure: number;
-        temperature: number;
-        humidity: number;
-        pumbStatus: string;
-        date: string;
-        time: string;
-    }[]>
-        ([{
-            id: 100,
-            soilMoisure: 25,
-            temperature: 28,
-            humidity: 40,
-            pumbStatus: "On",
-            date: "15/10/2025",
-            time: "09:35:12",
-        }, {
-            id: 101,
-            soilMoisure: 25,
-            temperature: 28,
-            humidity: 40,
-            pumbStatus: "On",
-            date: "15/10/2025",
-            time: "09:35:12",
-        },
-        {
-            id: 102,
-            soilMoisure: 25,
-            temperature: 28,
-            humidity: 40,
-            pumbStatus: "On",
-            date: "15/10/2025",
-            time: "09:35:12",
-        },
-        ]);
+    const [logs, setLogs] = useState<LogEvent[]>([]);
+
+    const formatDateTime = (isoString: string) => {
+        const date = new Date(isoString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
+
+    useEffect(() => {
+        const fetchLogs = async () => {
+            try {
+                const response = await getLogsAPI({ limit: 50 });
+                if (response.data) {
+                    setLogs(response.data);
+                }
+            } catch (error) {
+                console.error("Failed to get logs:", error);
+            }
+        };
+        
+        // Fetch immediately
+        fetchLogs();
+
+        // Set up interval to refresh every 10 seconds
+        const interval = setInterval(() => {
+            fetchLogs();
+        }, 10000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <View style={styles.container}>
-            {envData.length !== 0 ? (
+            {logs.length !== 0 ? (
                 <>
-                    {envData.map((item) => (
-                        <View style={styles.dataEnv} key={item.id}>
+                    {logs.map((item) => (
+                        <View style={styles.dataEnv} key={item.log_id}>
                             <View style={styles.label_value}>
-                                <Text style={styles.label}>Soil moisure: </Text>
-                                <Text style={styles.value}>{item.soilMoisure}%</Text>
+                                <Text style={styles.label}>Action: </Text>
+                                <Text style={styles.value}>{item.action}</Text>
                             </View>
                             <View style={styles.label_value}>
-                                <Text style={styles.label}>Temperature: </Text>
-                                <Text style={styles.value}>{item.temperature}°C </Text>
+                                <Text style={styles.label}>Event: </Text>
+                                <Text style={styles.value}>{item.name}</Text>
                             </View>
-                            <View style={styles.label_value}>
-                                <Text style={styles.label}>Humidity: </Text>
-                                <Text style={styles.value}>{item.humidity}%</Text>
+                            <View style={{ marginTop: 5 }}>
+                                <Text style={{ fontSize: 14, color: COLORS.textColor }}>
+                                    {item.description}
+                                </Text>
                             </View>
-                            <View style={styles.label_value}>
-                                <Text style={styles.label}>Pump status: </Text>
-                                <Text style={styles.value}>{item.pumbStatus}</Text>
-                            </View>
-                            <Text style={styles.date}>{item.date} {item.time}</Text>
+                            <Text style={styles.date}>{formatDateTime(item.created_at)}</Text>
                         </View>
                     ))}
                 </>
             ) : (
-                <View><Text style={{ color: COLORS.text, fontSize: 16 }}>No data available</Text></View>
+                <View><Text style={{ color: COLORS.titleColor, fontSize: 16 }}>No data available</Text></View>
             )}
         </View>
     )

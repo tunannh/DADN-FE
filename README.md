@@ -1,50 +1,36 @@
-# Welcome to your Expo app 👋
+# Smart Irrigation App (Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Frontend for the Smart Irrigation project. Backend must be running first.
 
-## Get started
+## Run the backend (required)
+- Python **3.10 only**. Set up and start the API from `dadncnpm`:
+  ```powershell
+  cd C:\WORKS\Fourth_Year\Sem1\DADN\app\dadncnpm
+  py -3.10 -m venv venv310
+  venv310\Scripts\activate
+  python -m pip install --upgrade pip
+  pip install -r requirements.txt
+  uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  ```
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+## Configure API base URL
+Create or edit `.env` in this folder:
+```env
+EXPO_PUBLIC_ANDROID_API_URL=http://10.0.2.2:8000   # Android emulator
+EXPO_PUBLIC_IOS_API_URL=http://localhost:8000      # iOS simulator
+# Physical device: replace both with your PC LAN IP, e.g. http://192.168.1.50:8000
 ```
+Restart Expo after changing `.env` so vars reload.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Run the frontend
+```powershell
+cd C:\WORKS\Fourth_Year\Sem1\DADN\app\DADN-FE
+npm install
+npx expo start -c
+```
+- When prompted about port conflicts, accept the alternate port.
+- Open the app in Expo Go / emulator / simulator. Login will call the backend at the URLs above.
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Notes
+- Uses Expo Router (file-based routing) under `src/app`.
+- Axios base URL is set via the env vars above, with sensible fallbacks for emulators.
